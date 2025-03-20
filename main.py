@@ -1,15 +1,10 @@
 import sys
-
 from random import randint as rand
 
 from PyQt6 import uic
-from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation, QRect, QEasingCurve, QSize, QPoint, QUrl, QObject
-from PyQt6.QtGui import QColor, QIcon, QPixmap, QPainter, QDesktopServices, QMouseEvent
-from PyQt6.QtGui import QFontDatabase
-from PyQt6.QtSvg import QSvgRenderer
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QProgressBar, QGraphicsBlurEffect, QPushButton, \
-    QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame, QGraphicsOpacityEffect, QHBoxLayout
-
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QMouseEvent
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
 from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action
 
 import conf

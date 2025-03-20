@@ -1,5 +1,6 @@
-import json
 import csv
+import json
+
 
 def get(num=1):
     with open('./students.json', 'r', encoding='utf-8') as f:
