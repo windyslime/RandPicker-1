@@ -4,7 +4,7 @@ from random import randint as rand
 
 from PyQt6 import uic
 from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation, QRect, QEasingCurve, QSize, QPoint, QUrl, QObject
-from PyQt6.QtGui import QColor, QIcon, QPixmap, QPainter, QDesktopServices
+from PyQt6.QtGui import QColor, QIcon, QPixmap, QPainter, QDesktopServices, QMouseEvent
 from PyQt6.QtGui import QFontDatabase
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QProgressBar, QGraphicsBlurEffect, QPushButton, \
@@ -52,19 +52,16 @@ class Widget(QWidget):
         btn = self.findChild(PushButton, 'btn')
         btn.clicked.connect(lambda: self.pick())
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             self.m_Position = event.globalPosition().toPoint() - self.pos()  # 获取鼠标相对窗口的位置
             self.p_Position = event.globalPosition().toPoint()  # 获取鼠标相对屏幕的位置
             event.accept()
 
-    def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton and self.m_flag:
+    def mouseMoveEvent(self, event: QMouseEvent):
+        if event.buttons() == Qt.MouseButton.LeftButton:
             self.move(event.globalPosition().toPoint() - self.m_Position)  # 更改窗口位置
             event.accept()
-
-    def mouseReleaseEvent(self, event):
-        self.r_Position = event.globalPosition()  # 获取鼠标相对窗口的位置
 
     def pick(self):
         num = rand(14, 14)
@@ -72,9 +69,9 @@ class Widget(QWidget):
             num = rand(14, 14)
         student = conf.get(num)
         name = self.findChild(QLabel, 'name')
-        id = self.findChild(QLabel, 'id')
+        id_ = self.findChild(QLabel, 'id')
         name.setText(student['name'])
-        id.setText(student['id'])
+        id_.setText(student['id'])
 
 class SystemTrayIcon(QSystemTrayIcon):
 

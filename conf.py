@@ -9,7 +9,7 @@ def get(num=1):
             return student
     return None
 
-def export2csv():
+def export2csv(): # WIP
     with open('./students.json', 'r', encoding='utf-8') as json_file:
         students = json.load(json_file)
     with open('./students.csv', 'w', newline='', encoding='utf-8') as csv_file:
