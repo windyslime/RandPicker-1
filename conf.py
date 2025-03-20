@@ -62,7 +62,7 @@ def excel2json(excel_path='./example.xlsx'):
     注意：第 1 2 3 列必须分别为 班级序号 姓名 全局学号 。
 
     :param excel_path: Excel 文件路径
-    :return:
+    :return: 一个包含所有学生信息的字典
     """
     sheet = pd.read_excel(excel_path)
     students = {}
@@ -71,6 +71,7 @@ def excel2json(excel_path='./example.xlsx'):
         line = sheet.loc[i, ['short_id', 'name', 'id']].to_dict()
         list_.append(line)
     students['students'] = list_
+    return students
 
 
 def write_conf(students=None):
@@ -82,5 +83,6 @@ def write_conf(students=None):
     """
     if students is None:
         students = {}
+    data = json.dumps(students, ensure_ascii=False, indent=4)
     with open('./students.json', 'w', encoding='utf-8') as f:
-        json.dump(students, f, ensure_ascii=False, indent=4, encoding='utf-8')
+        f.write(data)

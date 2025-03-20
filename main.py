@@ -9,7 +9,7 @@ from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Acti
 
 import conf
 
-excluded_number = []
+excluded_number = [5, 6, 12, 31]
 
 class Widget(QWidget):
     """
@@ -72,7 +72,7 @@ class Widget(QWidget):
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
         name.setText(f'{num} {student['name']}')
-        id_.setText(student['id'])
+        id_.setText(str(student['id']))
 
 class SystemTrayIcon(QSystemTrayIcon):
 
