@@ -9,6 +9,7 @@ from loguru import logger
 
 settings = None
 
+
 def open_settings():
     global settings
     if settings is None or not settings.isVisible():

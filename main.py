@@ -11,10 +11,12 @@ import conf
 
 excluded_number = [5, 6, 12, 31]
 
+
 class Widget(QWidget):
     """
     主浮窗。
     """
+
     def __init__(self):
         super().__init__()
         self.m_Position = None
@@ -74,6 +76,7 @@ class Widget(QWidget):
         name.setText(f'{num} {student['name']}')
         id_.setText(str(student['id']))
 
+
 class SystemTrayIcon(QSystemTrayIcon):
 
     def __init__(self, parent):
@@ -85,6 +88,7 @@ class SystemTrayIcon(QSystemTrayIcon):
             Action(fIcon.CLOSE, '关闭', triggered=lambda: sys.exit()),
         ])
         self.setContextMenu(self.menu)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
