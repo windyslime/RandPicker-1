@@ -12,6 +12,9 @@ import conf
 excluded_number = []
 
 class Widget(QWidget):
+    """
+    主浮窗。
+    """
     def __init__(self):
         super().__init__()
         self.m_Position = None
@@ -59,13 +62,16 @@ class Widget(QWidget):
             event.accept()
 
     def pick(self):
-        num = rand(14, 14)
+        """
+        随机选人。
+        """
+        num = rand(1, conf.get_students_num())
         while num in excluded_number:
-            num = rand(14, 14)
-        student = conf.get(num)
+            num = rand(1, conf.get_students_num())
+        student = conf.get_with_short_id(num)
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
-        name.setText(student['name'])
+        name.setText(f'{num} {student['name']}')
         id_.setText(student['id'])
 
 class SystemTrayIcon(QSystemTrayIcon):
