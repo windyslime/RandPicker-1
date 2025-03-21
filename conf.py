@@ -37,6 +37,17 @@ def get_with_id(num=1):
             return student
     return None
 
+def get(num=1):
+    """
+    通过数据文件中的顺序获取学生信息。
+    :param num: 数据文件中的顺序
+    :return: 学生信息
+    """
+    with open('./students.json', 'r', encoding='utf-8') as f:
+        students = json.load(f)
+    if students['students'][num]:
+        return students['students'][num]
+
 
 def get_students_num():
     """

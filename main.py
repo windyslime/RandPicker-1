@@ -9,6 +9,10 @@ from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Acti
 
 import conf
 
+# 适配高DPI缩放
+QApplication.setHighDpiScaleFactorRoundingPolicy(
+    Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+
 excluded_number = [5, 6, 12, 31]
 
 
@@ -70,9 +74,11 @@ class Widget(QWidget):
         num = rand(1, conf.get_students_num())
         while num in excluded_number:
             num = rand(1, conf.get_students_num())
-        student = conf.get_with_short_id(num)
+        student = conf.get(num)
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
+        if num < 10:
+            num = f'0{num}'
         name.setText(f'{num} {student['name']}')
         id_.setText(str(student['id']))
 
