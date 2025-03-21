@@ -1,4 +1,5 @@
 import sys
+import random
 from random import randint as rand
 
 from PyQt6 import uic
@@ -6,6 +7,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QMouseEvent
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
 from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action
+from loguru import logger
 
 import conf
 
@@ -31,7 +33,7 @@ class Widget(QWidget):
         self.systemTrayIcon.show()
 
     def init_ui(self):
-        uic.loadUi("widget.ui", self)
+        uic.loadUi("./ui/widget.ui", self)
 
         # 设置窗口无边框和透明背景
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
@@ -77,8 +79,10 @@ class Widget(QWidget):
         student = conf.get(num)
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
-        if num < 10:
-            num = f'0{num}'
+        if student['short_id'] < 10:
+            num = f'0{student['short_id']}'
+        else:
+            num = f'{student["short_id"]}'
         name.setText(f'{num} {student['name']}')
         id_.setText(str(student['id']))
 
@@ -98,6 +102,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    logger.info("RandPicker 启动。")
     widget = Widget()
     widget.show()
     widget.raise_()

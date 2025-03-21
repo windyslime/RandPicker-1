@@ -4,8 +4,10 @@
 
 import csv
 import json
+import os.path
 
 import pandas as pd
+from loguru import logger
 
 
 def get_with_short_id(num=1):
@@ -17,6 +19,8 @@ def get_with_short_id(num=1):
     """
     with open('./students.json', 'r', encoding='utf-8') as f:
         students = json.load(f)
+    if students == {} or students['students'] == {}:
+        return {'short_id': '', 'id': '000000', 'name': '无结果'}
     for student in students['students']:
         if student['short_id'] == num:
             return student
@@ -32,6 +36,8 @@ def get_with_id(num=1):
     """
     with open('./students.json', 'r', encoding='utf-8') as f:
         students = json.load(f)
+    if students == {} or students['students'] == {}:
+        return {'short_id': '', 'id': '000000', 'name': '无结果'}
     for student in students['students']:
         if student['id'] == num:
             return student
@@ -45,10 +51,14 @@ def get(num=1):
     """
     with open('./students.json', 'r', encoding='utf-8') as f:
         students = json.load(f)
+    if students == {} or students['students'] == {}:
+        logger.warning("配置文件为空！")
+        return {'short_id': '', 'id': '000000', 'name': '无结果'}
     num = num - 1
     if students['students'][num]:
         return students['students'][num]
-    print("未找到")
+    logger.warning("学生未找到")
+    return {'short_id': '', 'id': '000000', 'name': '无结果'}
 
 
 def get_students_num():
@@ -73,7 +83,7 @@ def excel2json(excel_path='./example.xlsx'):
     """
     从 Excel 文件 (.xls, .xlsx) 导入。
 
-    注意：第 1 2 3 列必须分别为 班级序号 姓名 全局学号 。
+    注意：第一栏要包含 short_id, name 和 id. 即班级序号, 姓名和全局学号。
 
     :param excel_path: Excel 文件路径
     :return: 一个包含所有学生信息的字典
@@ -96,7 +106,13 @@ def write_conf(students=None):
     :return:
     """
     if students is None:
-        students = {}
+        return
     data = json.dumps(students, ensure_ascii=False, indent=4)
     with open('./students.json', 'w', encoding='utf-8') as f:
         f.write(data)
+
+def check_config():
+    students = {'students': []}
+    if not os.path.exists('./students.json'): # 配置文件不存在
+        with open('./students.json', 'w', encoding='utf-8') as f:
+            json.dump(students, f, ensure_ascii=False, indent=4) # 创建空配置文件
