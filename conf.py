@@ -45,8 +45,10 @@ def get(num=1):
     """
     with open('./students.json', 'r', encoding='utf-8') as f:
         students = json.load(f)
+    num = num - 1
     if students['students'][num]:
         return students['students'][num]
+    print("未找到")
 
 
 def get_students_num():
