@@ -58,14 +58,16 @@ def get(num=1):
     logger.warning("学生未找到")
     return {'weight': '1', 'id': '000000', 'name': '无结果'}
 
+
 def get_students_list():
     students = get_all_students()
     list_ = []
-    for i in range(1, len(students['students'])+1):
-        if students['students'][i-1]['active']:
+    for i in range(1, len(students['students']) + 1):
+        if students['students'][i - 1]['active']:
             list_.append(i)
         i = i + 1
     return list_
+
 
 def get_students_num():
     """
@@ -148,6 +150,7 @@ def get_weight():
         if student['active']:
             weight.append(student['weight'])
     return weight
+
 
 def get_all_weight():
     """

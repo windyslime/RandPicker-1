@@ -5,7 +5,7 @@ import os
 import sys
 
 from PyQt6 import uic
-from PyQt6.QtCore import QUrl, pyqtSignal
+from PyQt6.QtCore import QUrl, pyqtSignal, QSharedMemory
 from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView
 from loguru import logger
@@ -15,6 +15,8 @@ from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableW
 import conf
 
 settings = None
+
+share = QSharedMemory('RandPicker')
 
 
 def open_settings():
@@ -112,7 +114,6 @@ class Settings(FluentWindow):
                 btn_active.setChecked(False)
             table.setCellWidget(row, 3, btn_active)
 
-
         btn_save = self.findChild(PushButton, 'save_student')
         btn_save.clicked.connect(lambda: self.save_students())
 
@@ -147,6 +148,10 @@ class Settings(FluentWindow):
 
 
 def restart():
+    global share
+    if share.attach():
+        share.detach()
+        share.deleteLater()
     logger.info("重新启动")
     os.execl(sys.executable, sys.executable, *sys.argv)
 

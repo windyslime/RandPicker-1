@@ -7,10 +7,10 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QMouseEvent, QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
 from loguru import logger
-from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action
+from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog
 
 import conf
-from settings import open_settings, restart
+from settings import open_settings, share
 
 # 适配高DPI缩放
 QApplication.setHighDpiScaleFactorRoundingPolicy(
@@ -114,7 +114,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         ])
         self.menu.addSeparator()
         self.menu.addActions([
-            Action(fIcon.SYNC, '重新启动', triggered=lambda: restart()),
+            # Action(fIcon.SYNC, '重新启动', triggered=lambda: restart()),
             Action(fIcon.CLOSE, '关闭', triggered=lambda: sys.exit()),
         ])
         self.setContextMenu(self.menu)
@@ -122,8 +122,23 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 if __name__ == "__main__":
     os.environ['QT_SCALE_FACTOR'] = str(conf.get_ini('General', 'scale'))
+    share.create(1)
     app = QApplication(sys.argv)
     logger.info(f"RandPicker 启动。缩放系数 {os.environ['QT_SCALE_FACTOR']}。")
+    if share.attach():
+        logger.warning("有一个实例正在运行，或者上次没有正常退出。")
+        logger.error("不欢迎。")
+        msg_box = Dialog(
+            'RandPicker 正在运行',
+            'RandPicker 正在运行！请勿打开多个实例，否则将会出现不可预知的问题。'
+        )
+        msg_box.yesButton.setText('好')
+        msg_box.cancelButton.hide()
+        msg_box.buttonLayout.insertStretch(0, 1)
+        msg_box.setFixedWidth(550)
+        msg_box.exec()
+        logger.info("退出。")
+        sys.exit(-1)
     logger.info("欢迎。")
     conf.check_config()
     widget = Widget()
