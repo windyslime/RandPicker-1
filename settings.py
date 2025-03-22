@@ -85,7 +85,7 @@ class Settings(FluentWindow):
 
         btn_license = self.findChild(PushButton, 'btn_license')
         btn_license.clicked.connect(
-            lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker/blob/main/LICENESE')))
+            lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker/blob/main/LICENSE')))
 
     def setup_student_edit_interface(self):  # 设置 学生信息编辑 页面
         table = self.findChild(TableWidget, 'student_list')
