@@ -27,6 +27,7 @@ class Widget(QWidget):
         self.m_Position = None
         self.p_Position = None
         self.r_Position = None
+        self.is_picking = False
         self.init_ui()
         self.setWindowIcon(QIcon('./img/Logo.png'))
         self.systemTrayIcon = SystemTrayIcon(self)
@@ -77,6 +78,7 @@ class Widget(QWidget):
         """
         随机选人。
         """
+        self.is_picking = True
         # num = rand(1, conf.get_students_num())
         num = choices(list(range(1, conf.get_students_num() + 1)), weights=conf.get_weight(), k=1)[0]
         logger.info(f'随机数已生成。JSON 索引是 {num - 1}。')
@@ -86,13 +88,17 @@ class Widget(QWidget):
         id_ = self.findChild(QLabel, 'id')
         name.setText(f'{str(student['id'])[-2:]} {student['name']}')
         id_.setText(str(student['id']))
+        self.is_picking = False
 
     def clear(self):  # 清除结果
-        name = self.findChild(QLabel, 'name')
-        id_ = self.findChild(QLabel, 'id')
-        name.setText('无结果')
-        id_.setText('000000')
-        logger.info('清除结果')
+        if not self.is_picking:
+            name = self.findChild(QLabel, 'name')
+            id_ = self.findChild(QLabel, 'id')
+            name.setText('无结果')
+            id_.setText('000000')
+            logger.info('清除结果')
+            return 0
+        logger.warning('没有清除结果，因为正在选人。')
 
 
 class SystemTrayIcon(QSystemTrayIcon):

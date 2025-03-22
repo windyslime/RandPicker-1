@@ -36,7 +36,9 @@ jobs:
           script-name: main.py
           output-file: RandPicker
           enable-plugins: pyqt6
-          include-data-files: LICENSE=LICENSE
+          include-data-files: |
+            LICENSE=LICENSE
+            default_config.json=default_config.json
           include-data-dir: |
             ui=ui
             img=img
