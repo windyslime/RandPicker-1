@@ -37,6 +37,9 @@ jobs:
           output-file: RandPicker
           enable-plugins: pyqt6
           include-data-files: LICENSE=LICENSE
+          include-data-dir: |
+            ui=ui
+            img=img
           disable-console: true
           windows-icon-from-ico: ./img/Logo.png
 
