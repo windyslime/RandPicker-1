@@ -1,6 +1,6 @@
+import os
 import sys
-import random
-from random import randint as rand
+from random import randint as rand, choices
 
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
@@ -15,9 +15,6 @@ from settings import open_settings
 # 适配高DPI缩放
 QApplication.setHighDpiScaleFactorRoundingPolicy(
     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-
-excluded_number = [5, 6, 12, 31]
-
 
 class Widget(QWidget):
     """
@@ -60,7 +57,8 @@ class Widget(QWidget):
         btn.clicked.connect(lambda: self.pick())
 
         btn_clear = self.findChild(PushButton, 'btn_clear')
-        btn_clear.clicked.connect(lambda: open_settings())
+        # btn_clear.clicked.connect(lambda: self.clear())
+        btn_clear.clicked.connect(lambda: open_settings()) # Debug Only
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -77,22 +75,17 @@ class Widget(QWidget):
         """
         随机选人。
         """
-        num = rand(1, conf.get_students_num())
-        while num in excluded_number:
-            num = rand(1, conf.get_students_num())
-        logger.info(f'随机数已生成。JSON 索引是 {num}。')
+        # num = rand(1, conf.get_students_num())
+        num = choices(list(range(1, conf.get_students_num() + 1)), weights=conf.get_weight(), k=1)[0]
+        logger.info(f'随机数已生成。JSON 索引是 {num - 1}。')
         student = conf.get(num)
-        logger.info(f'已获取 JSON 索引是 {num} 的学生信息。{student}')
+        logger.debug(f'已获取 JSON 索引是 {num - 1} 的学生信息。{student}')
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
-        if student['short_id'] < 10:
-            num = f'0{student['short_id']}'
-        else:
-            num = f'{student["short_id"]}'
-        name.setText(f'{num} {student['name']}')
+        name.setText(f'{str(student['id'])[-2:]} {student['name']}')
         id_.setText(str(student['id']))
 
-    def clear(self):
+    def clear(self): # 清除结果
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
         name.setText('无结果')
@@ -115,8 +108,10 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 
 if __name__ == "__main__":
+    os.environ['QT_SCALE_FACTOR'] = str(0.7)
     app = QApplication(sys.argv)
-    logger.info("RandPicker 启动。")
+    logger.info(f"RandPicker 启动。缩放系数 {os.environ['QT_SCALE_FACTOR']}。")
+    logger.info("欢迎。")
     widget = Widget()
     widget.show()
     widget.raise_()

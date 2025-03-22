@@ -49,12 +49,12 @@ class Settings(FluentWindow):
         self.init_nav()
         self.setup_ui()
 
-    def init_nav(self):
+    def init_nav(self): # 设置侧边栏
         self.addSubInterface(self.stuEditInterface, fIcon.EDIT, '学生信息编辑')
         self.navigationInterface.addSeparator(NavigationItemPosition.BOTTOM)
         self.addSubInterface(self.aboutInterface, fIcon.INFO, '关于', NavigationItemPosition.BOTTOM)
 
-    def setup_ui(self):
+    def setup_ui(self): # 设置所有页面
         self.stackedWidget.setCurrentIndex(0)  # 设置初始页面
         self.setMinimumWidth(700)
         self.setMinimumHeight(400)
@@ -77,7 +77,7 @@ class Settings(FluentWindow):
         #self.setWindowIcon(fIcon.INFO)
         self.setup_about_interface()
 
-    def setup_about_interface(self):
+    def setup_about_interface(self): # 设置 关于 页面
         btn_github = self.findChild(PushButton, 'button_github')
         btn_github.clicked.connect(lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker')))
 
@@ -85,7 +85,8 @@ class Settings(FluentWindow):
         btn_license.clicked.connect(
             lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker/blob/main/LICENESE')))
 
-    def setup_student_edit_interface(self):
+    def setup_student_edit_interface(self): # 设置 学生信息编辑 页面
+
         table = self.findChild(TableWidget, 'student_list')
         table.setBorderVisible(True)
         table.setBorderRadius(8)

@@ -8,17 +8,17 @@ import os.path
 
 import pandas as pd
 from loguru import logger
+import configparser
 
 
-def get_with_short_id(num=1):
+def get_with_json_index(num=1):
     """
     通过班级序号获取学生信息。
 
     :param num: 班级序号
     :return: 学生信息
     """
-    with open('./students.json', 'r', encoding='utf-8') as f:
-        students = json.load(f)
+    students = get_all_students()
     if students == {} or students['students'] == {}:
         return {'short_id': '', 'id': '000000', 'name': '无结果'}
     for student in students['students']:
@@ -34,10 +34,9 @@ def get_with_id(num=1):
     :param num: 全局学号
     :return: 学生信息
     """
-    with open('./students.json', 'r', encoding='utf-8') as f:
-        students = json.load(f)
+    students = get_all_students()
     if students == {} or students['students'] == {}:
-        return {'short_id': '', 'id': '000000', 'name': '无结果'}
+        return {'weight': '1', 'id': '000000', 'name': '无结果'}
     for student in students['students']:
         if student['id'] == num:
             return student
@@ -49,16 +48,15 @@ def get(num=1):
     :param num: 数据文件中的顺序
     :return: 学生信息
     """
-    with open('./students.json', 'r', encoding='utf-8') as f:
-        students = json.load(f)
+    students = get_all_students()
     if students == {} or students['students'] == {}:
         logger.warning("配置文件为空！")
-        return {'short_id': '', 'id': '000000', 'name': '无结果'}
+        return {'weight': '1', 'id': '000000', 'name': '无结果'}
     num = num - 1
     if students['students'][num]:
         return students['students'][num]
     logger.warning("学生未找到")
-    return {'short_id': '', 'id': '000000', 'name': '无结果'}
+    return {'weight': '1', 'id': '000000', 'name': '无结果'}
 
 
 def get_students_num():
@@ -67,8 +65,7 @@ def get_students_num():
 
     :return: 学生人数
     """
-    with open('./students.json', 'r', encoding='utf-8') as f:
-        students = json.load(f)
+    students = get_all_students()
     return len(students['students'])
 
 
@@ -92,7 +89,7 @@ def excel2json(excel_path='./example.xlsx'):
     students = {}
     list_ = []
     for i in sheet.index.values:
-        line = sheet.loc[i, ['short_id', 'name', 'id']].to_dict()
+        line = sheet.loc[i, ['weight', 'name', 'id']].to_dict()
         list_.append(line)
     students['students'] = list_
     return students
@@ -116,3 +113,22 @@ def check_config():
     if not os.path.exists('./students.json'): # 配置文件不存在
         with open('./students.json', 'w', encoding='utf-8') as f:
             json.dump(students, f, ensure_ascii=False, indent=4) # 创建空配置文件
+
+def get_all_students():
+    with open('./students.json', 'r', encoding='utf-8') as f:
+        students = json.load(f)
+    return students
+
+def get_weight():
+    """
+    获取全部权重。
+    :return: 全部权重
+    """
+    students = get_all_students()
+    weight = []
+    for student in students['students']:
+        weight.append(student['weight'])
+    return weight
+
+
+config = configparser.ConfigParser()
