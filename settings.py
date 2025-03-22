@@ -2,20 +2,17 @@
 设置。
 """
 import sys
-import json
 
+from PyQt6 import uic
 from PyQt6.QtCore import QUrl, pyqtSignal
 from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView
-# 饼 做不做不一定
-# 好好好在做了
-
 from loguru import logger
-from PyQt6 import uic
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
     InfoBarIcon, FlyoutAnimationType
 
 import conf
+
 
 settings = None
 
@@ -53,12 +50,12 @@ class Settings(FluentWindow):
         self.init_nav()
         self.setup_ui()
 
-    def init_nav(self): # 设置侧边栏
+    def init_nav(self):  # 设置侧边栏
         self.addSubInterface(self.stuEditInterface, fIcon.EDIT, '学生信息编辑')
         self.navigationInterface.addSeparator(NavigationItemPosition.BOTTOM)
         self.addSubInterface(self.aboutInterface, fIcon.INFO, '关于', NavigationItemPosition.BOTTOM)
 
-    def setup_ui(self): # 设置所有页面
+    def setup_ui(self):  # 设置所有页面
         self.stackedWidget.setCurrentIndex(0)  # 设置初始页面
         self.setMinimumWidth(700)
         self.setMinimumHeight(400)
@@ -78,11 +75,11 @@ class Settings(FluentWindow):
         self.resize(width, height)
 
         self.setWindowTitle('RandPicker 设置')
-        #self.setWindowIcon(fIcon.INFO)
+        # self.setWindowIcon(fIcon.INFO)
         self.setup_about_interface()
         self.setup_student_edit_interface()
 
-    def setup_about_interface(self): # 设置 关于 页面
+    def setup_about_interface(self):  # 设置 关于 页面
         btn_github = self.findChild(PushButton, 'button_github')
         btn_github.clicked.connect(lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker')))
 
@@ -97,7 +94,7 @@ class Settings(FluentWindow):
         table.setWordWrap(True)
         table.setColumnCount(3)
         table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        table.setHorizontalHeaderLabels(['Name', 'ID', 'Weight'])
+        table.setHorizontalHeaderLabels(['姓名', '学号', '权重'])
 
         students = conf.get_all_students()
         table.setRowCount(conf.get_students_num())
@@ -112,9 +109,7 @@ class Settings(FluentWindow):
 
     def save_students(self):
         table = self.findChild(TableWidget, 'student_list')
-        students = {'students': []}
-
-        students['students'] = [{} for _ in range(table.rowCount())]
+        students = {'students': [{} for _ in range(table.rowCount())]}
 
         for row in range(0, table.rowCount()):
             # logger.debug(f"正在保存学生信息。第 {row} 行。")

@@ -2,13 +2,13 @@
 配置文件和数据整理。
 """
 
+import configparser
 import csv
 import json
 import os.path
 
 import pandas as pd
 from loguru import logger
-import configparser
 
 
 def get_with_json_index(num=1):
@@ -41,6 +41,7 @@ def get_with_id(num=1):
         if student['id'] == num:
             return student
     return None
+
 
 def get(num=1):
     """
@@ -108,16 +109,19 @@ def write_conf(students=None):
     with open('./students.json', 'w', encoding='utf-8') as f:
         f.write(data)
 
+
 def check_config():
     students = {'students': []}
-    if not os.path.exists('./students.json'): # 配置文件不存在
+    if not os.path.exists('./students.json'):  # 配置文件不存在
         with open('./students.json', 'w', encoding='utf-8') as f:
-            json.dump(students, f, ensure_ascii=False, indent=4) # 创建空配置文件
+            json.dump(students, f, ensure_ascii=False, indent=4)  # 创建空配置文件
+
 
 def get_all_students():
     with open('./students.json', 'r', encoding='utf-8') as f:
         students = json.load(f)
     return students
+
 
 def get_weight():
     """

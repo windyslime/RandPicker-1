@@ -1,13 +1,13 @@
 import os
 import sys
-from random import randint as rand, choices
+from random import choices
 
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QMouseEvent
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
-from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action
 from loguru import logger
+from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action
 
 import conf
 from settings import open_settings
@@ -15,6 +15,7 @@ from settings import open_settings
 # 适配高DPI缩放
 QApplication.setHighDpiScaleFactorRoundingPolicy(
     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+
 
 class Widget(QWidget):
     """
@@ -58,7 +59,7 @@ class Widget(QWidget):
 
         btn_clear = self.findChild(PushButton, 'btn_clear')
         # btn_clear.clicked.connect(lambda: self.clear())
-        btn_clear.clicked.connect(lambda: open_settings()) # Debug Only
+        btn_clear.clicked.connect(lambda: open_settings())  # Debug Only
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -85,7 +86,7 @@ class Widget(QWidget):
         name.setText(f'{str(student['id'])[-2:]} {student['name']}')
         id_.setText(str(student['id']))
 
-    def clear(self): # 清除结果
+    def clear(self):  # 清除结果
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
         name.setText('无结果')
