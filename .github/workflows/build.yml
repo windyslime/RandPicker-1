@@ -1,0 +1,52 @@
+name: 构建
+
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+      - name: Setup Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: '3.12.6'
+          architecture: ${{ matrix.arch }}
+          cache: 'pip'
+          cache-dependency-path: |
+            **/requirements*.txt
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        uses: Nuitka/Nuitka-Action@main
+        with:
+          mode: standalone
+          script-name: main.py
+          output-file: RandPicker
+          enable-plugins: pyqt6
+          include-data-files: LICENSE=LICENSE
+          disable-console: true
+          windows-icon-from-ico: ./img/Logo.png
+
+      - name: Package
+        run: |
+          curl -o zip.exe -L http://www.stahlworks.com/dev/zip.exe
+          xcopy build\main.dist\* RandPicker\ /e/y
+          ./zip -r -q RandPicker.zip RandPicker
+
+      - name: Upload
+        uses: actions/upload-artifact@v4.4.2
+        with:
+          name: RandPicker
+          path: RandPicker.zip
