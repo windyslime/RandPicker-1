@@ -61,7 +61,7 @@ class Settings(FluentWindow):
         self.stackedWidget.setCurrentIndex(0)  # 设置初始页面
         self.setMinimumWidth(700)
         self.setMinimumHeight(400)
-        self.navigationInterface.setExpandWidth(250)
+        self.navigationInterface.setExpandWidth(200)
         self.navigationInterface.setCollapsible(False)
         self.setMicaEffectEnabled(True)
 
