@@ -2,16 +2,20 @@
 设置。
 """
 import sys
+import json
 
 from PyQt6.QtCore import QUrl, pyqtSignal
 from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView
 # 饼 做不做不一定
 # 好好好在做了
 
 from loguru import logger
 from PyQt6 import uic
-from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition
+from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
+    InfoBarIcon, FlyoutAnimationType
+
+import conf
 
 settings = None
 
@@ -76,6 +80,7 @@ class Settings(FluentWindow):
         self.setWindowTitle('RandPicker 设置')
         #self.setWindowIcon(fIcon.INFO)
         self.setup_about_interface()
+        self.setup_student_edit_interface()
 
     def setup_about_interface(self): # 设置 关于 页面
         btn_github = self.findChild(PushButton, 'button_github')
@@ -85,15 +90,51 @@ class Settings(FluentWindow):
         btn_license.clicked.connect(
             lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker/blob/main/LICENESE')))
 
-    def setup_student_edit_interface(self): # 设置 学生信息编辑 页面
-
+    def setup_student_edit_interface(self):  # 设置 学生信息编辑 页面
         table = self.findChild(TableWidget, 'student_list')
         table.setBorderVisible(True)
         table.setBorderRadius(8)
-        table.setWordWrap(False)
-        table.setRowCount(3)
-        table.setColumnCount(5)
-        table.verticalHeader().hide()
+        table.setWordWrap(True)
+        table.setColumnCount(3)
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        table.setHorizontalHeaderLabels(['Name', 'ID', 'Weight'])
+
+        students = conf.get_all_students()
+        table.setRowCount(conf.get_students_num())
+
+        for row, student in enumerate(students['students']):
+            table.setItem(row, 0, QTableWidgetItem(student['name']))
+            table.setItem(row, 1, QTableWidgetItem(str(student['id'])))
+            table.setItem(row, 2, QTableWidgetItem(str(student['weight'])))
+
+        btn_save = self.findChild(PushButton, 'save_student')
+        btn_save.clicked.connect(lambda: self.save_students())
+
+    def save_students(self):
+        table = self.findChild(TableWidget, 'student_list')
+        students = {'students': []}
+
+        students['students'] = [{} for _ in range(table.rowCount())]
+
+        for row in range(0, table.rowCount()):
+            # logger.debug(f"正在保存学生信息。第 {row} 行。")
+            name = table.item(row, 0).text()
+            id_ = int(table.item(row, 1).text())
+            weight = int(table.item(row, 2).text())
+            students["students"][row] = {"name": name, "id": id_, "weight": weight}
+
+        conf.write_conf(students)
+        btn_save = self.findChild(PushButton, 'save_student')
+        Flyout.create(
+            icon=InfoBarIcon.SUCCESS,
+            title='学生信息已保存',
+            content="学生信息已保存至 students.json。",
+            target=btn_save,
+            parent=self,
+            isClosable=False,
+            aniType=FlyoutAnimationType.PULL_UP
+        )
+        logger.info('学生信息已保存')
 
     def closeEvent(self, event):
         self.closed.emit()
