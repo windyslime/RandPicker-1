@@ -80,10 +80,10 @@ class Settings(FluentWindow):
         self.setup_student_edit_interface()
 
     def setup_about_interface(self):  # 设置 关于 页面
-        btn_github = self.findChild(PushButton, 'button_github')
+        btn_github = self.findChild(PushButton, 'btn_github')
         btn_github.clicked.connect(lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker')))
 
-        btn_license = self.findChild(PushButton, 'button_show_license')
+        btn_license = self.findChild(PushButton, 'btn_license')
         btn_license.clicked.connect(
             lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker/blob/main/LICENESE')))
 
