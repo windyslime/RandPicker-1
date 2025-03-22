@@ -19,16 +19,17 @@ jobs:
         uses: actions/setup-python@v5.3.0
         with:
           python-version: '3.12.6'
-          architecture: ${{ matrix.arch }}
+          architecture: x64
           cache: 'pip'
           cache-dependency-path: |
             **/requirements*.txt
 
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install imageio
 
       - name: Build
-        if: ${{ startsWith(matrix.os, 'windows') }}
         uses: Nuitka/Nuitka-Action@main
         with:
           mode: standalone
