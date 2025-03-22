@@ -3,7 +3,6 @@
 """
 
 import configparser
-import csv
 import json
 import os.path
 
@@ -81,7 +80,7 @@ def excel2json(excel_path='./example.xlsx'):
     """
     从 Excel 文件 (.xls, .xlsx) 导入。
 
-    注意：第一栏要包含 short_id, name 和 id. 即班级序号, 姓名和全局学号。
+    注意：第一栏要包含 weight, name 和 id. 即相对权重, 姓名和全局学号。
 
     :param excel_path: Excel 文件路径
     :return: 一个包含所有学生信息的字典
@@ -141,6 +140,7 @@ def get_weight():
         weight.append(student['weight'])
     return weight
 
+
 def get_ini(section='General', key=''):
     config.read('config.ini')
     with open('./default_config.json', 'r', encoding='utf-8') as f:
@@ -152,5 +152,6 @@ def get_ini(section='General', key=''):
         logger.debug(f"已获取默认配置 {section} -> {key} {default[section][key]}")
         return default[section][key]
     return None
+
 
 config = configparser.ConfigParser()

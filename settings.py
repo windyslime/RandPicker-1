@@ -1,8 +1,8 @@
 """
 设置。
 """
-import sys
 import os
+import sys
 
 from PyQt6 import uic
 from PyQt6.QtCore import QUrl, pyqtSignal
@@ -13,7 +13,6 @@ from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableW
     InfoBarIcon, FlyoutAnimationType
 
 import conf
-
 
 settings = None
 
@@ -136,9 +135,11 @@ class Settings(FluentWindow):
         self.closed.emit()
         event.accept()
 
+
 def restart():
     logger.info("重新启动")
     os.execl(sys.executable, sys.executable, *sys.argv)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
