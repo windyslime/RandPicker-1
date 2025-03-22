@@ -16,6 +16,8 @@ from settings import open_settings, restart
 QApplication.setHighDpiScaleFactorRoundingPolicy(
     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
+logger.add("./log/RandPicker_{time}.log", rotation="1 MB", encoding="utf-8", retention="1 minute")
+
 
 class Widget(QWidget):
     """
@@ -81,7 +83,7 @@ class Widget(QWidget):
         self.is_picking = True
         # num = rand(1, conf.get_students_num())
         num = choices(list(range(1, conf.get_students_num() + 1)), weights=conf.get_weight(), k=1)[0]
-        logger.info(f'随机数已生成。JSON 索引是 {num - 1}。')
+        logger.info(f'随机数已生成。JSON 索引是 {num - 1}。它的选择权重是 {conf.get_weight()[num - 1]}。')
         student = conf.get(num)
         logger.debug(f'已获取 JSON 索引是 {num - 1} 的学生信息。{student}')
         name = self.findChild(QLabel, 'name')
@@ -106,10 +108,12 @@ class SystemTrayIcon(QSystemTrayIcon):
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.setIcon(parent.windowIcon())
-        self.setIcon(QIcon(parent.windowIcon()))
-        self.menu = SystemTrayMenu(parent=parent)
+        self.menu = SystemTrayMenu(title="RandPicker", parent=parent)
         self.menu.addActions([
             Action(fIcon.SETTING, '设置', triggered=lambda: open_settings()),
+        ])
+        self.menu.addSeparator()
+        self.menu.addActions([
             Action(fIcon.SYNC, '重新启动', triggered=lambda: restart()),
             Action(fIcon.CLOSE, '关闭', triggered=lambda: sys.exit()),
         ])
