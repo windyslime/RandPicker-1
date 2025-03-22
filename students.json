@@ -1,7 +1,7 @@
 {
 "students": [{
   "name": "测试测试",
-  "short_id": 14,
-  "id": "260314"}
+  "id": "260314",
+"active": true, "weight": 1}
 ]
 }
