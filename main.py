@@ -4,13 +4,13 @@ from random import choices
 
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QMouseEvent
+from PyQt6.QtGui import QColor, QMouseEvent, QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
 from loguru import logger
 from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action
 
 import conf
-from settings import open_settings
+from settings import open_settings, restart
 
 # 适配高DPI缩放
 QApplication.setHighDpiScaleFactorRoundingPolicy(
@@ -28,6 +28,7 @@ class Widget(QWidget):
         self.p_Position = None
         self.r_Position = None
         self.init_ui()
+        self.setWindowIcon(QIcon('./img/Logo.png'))
         self.systemTrayIcon = SystemTrayIcon(self)
         self.systemTrayIcon.show()
 
@@ -58,8 +59,8 @@ class Widget(QWidget):
         btn.clicked.connect(lambda: self.pick())
 
         btn_clear = self.findChild(PushButton, 'btn_clear')
-        # btn_clear.clicked.connect(lambda: self.clear())
-        btn_clear.clicked.connect(lambda: open_settings())  # Debug Only
+        btn_clear.clicked.connect(lambda: self.clear())
+        # btn_clear.clicked.connect(lambda: open_settings())  # Debug Only
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -99,17 +100,18 @@ class SystemTrayIcon(QSystemTrayIcon):
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.setIcon(parent.windowIcon())
-
+        self.setIcon(QIcon(parent.windowIcon()))
         self.menu = SystemTrayMenu(parent=parent)
         self.menu.addActions([
             Action(fIcon.SETTING, '设置', triggered=lambda: open_settings()),
+            Action(fIcon.SYNC, '重新启动', triggered=lambda: restart()),
             Action(fIcon.CLOSE, '关闭', triggered=lambda: sys.exit()),
         ])
         self.setContextMenu(self.menu)
 
 
 if __name__ == "__main__":
-    os.environ['QT_SCALE_FACTOR'] = str(0.7)
+    os.environ['QT_SCALE_FACTOR'] = str(1.0)
     app = QApplication(sys.argv)
     logger.info(f"RandPicker 启动。缩放系数 {os.environ['QT_SCALE_FACTOR']}。")
     logger.info("欢迎。")

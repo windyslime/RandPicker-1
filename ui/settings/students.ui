@@ -40,8 +40,8 @@
                 <widget class="CaptionLabel" name="CaptionLabel">
                     <property name="text">
                         <string>学号必须为数字。
-                            权重是相对权重，即数字越大，概率越高。权重为 0 时不会被抽中。不建议设置过大的权重值。
-                            以五个项目为例，则其中一个项目的相对权重为：a/(a+b+c+d+e)
+权重是相对权重，即数字越大，概率越高。权重为 0 时不会被抽中。不建议设置过大的权重值。
+以五个项目为例，则其中一个项目的相对权重为：a/(a+b+c+d+e)
                         </string>
                     </property>
                 </widget>

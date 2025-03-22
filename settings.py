@@ -2,10 +2,11 @@
 设置。
 """
 import sys
+import os
 
 from PyQt6 import uic
 from PyQt6.QtCore import QUrl, pyqtSignal
-from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
@@ -75,7 +76,7 @@ class Settings(FluentWindow):
         self.resize(width, height)
 
         self.setWindowTitle('RandPicker 设置')
-        # self.setWindowIcon(fIcon.INFO)
+        self.setWindowIcon(QIcon('./img/Logo.png'))
         self.setup_about_interface()
         self.setup_student_edit_interface()
 
@@ -135,6 +136,9 @@ class Settings(FluentWindow):
         self.closed.emit()
         event.accept()
 
+def restart():
+    os.execl(sys.executable, sys.executable, *sys.argv)
+    logger.info("重新启动")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
