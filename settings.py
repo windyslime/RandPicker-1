@@ -137,8 +137,8 @@ class Settings(FluentWindow):
         event.accept()
 
 def restart():
-    os.execl(sys.executable, sys.executable, *sys.argv)
     logger.info("重新启动")
+    os.execl(sys.executable, sys.executable, *sys.argv)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

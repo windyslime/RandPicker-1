@@ -70,11 +70,11 @@ def get_students_num():
     return len(students['students'])
 
 
-def export2csv():  # WIP
+'''def export2csv():  # WIP
     with open('./students.json', 'r', encoding='utf-8') as json_file:
         students = json.load(json_file)
     with open('./students.csv', 'w', newline='', encoding='utf-8') as csv_file:
-        csv_writer = csv.writer(csv_file)
+        csv_writer = csv.writer(csv_file)'''
 
 
 def excel2json(excel_path='./example.xlsx'):
@@ -114,7 +114,14 @@ def check_config():
     students = {'students': []}
     if not os.path.exists('./students.json'):  # 配置文件不存在
         with open('./students.json', 'w', encoding='utf-8') as f:
+            # noinspection PyTypeChecker
             json.dump(students, f, ensure_ascii=False, indent=4)  # 创建空配置文件
+    if not os.path.exists('./config.ini'):
+        with open('./default_config.json', 'r', encoding='utf-8') as json_file:
+            default = json.load(json_file)
+        config.read_dict(default)
+        with open('./config.ini', 'w', encoding='utf-8') as ini:
+            config.write(ini)
 
 
 def get_all_students():
@@ -134,5 +141,16 @@ def get_weight():
         weight.append(student['weight'])
     return weight
 
+def get_ini(section='General', key=''):
+    config.read('config.ini')
+    with open('./default_config.json', 'r', encoding='utf-8') as f:
+        default = json.load(f)
+    if section in config and key in config[section]:
+        logger.debug(f"已获取配置 {section} -> {key} {config[section][key]}")
+        return config[section][key]
+    elif section in default and key in default[section]:
+        logger.debug(f"已获取默认配置 {section} -> {key} {default[section][key]}")
+        return default[section][key]
+    return None
 
 config = configparser.ConfigParser()
