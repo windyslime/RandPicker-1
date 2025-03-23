@@ -7,10 +7,10 @@ import sys
 from PyQt6 import uic
 from PyQt6.QtCore import QUrl, pyqtSignal, QSharedMemory, Qt
 from PyQt6.QtGui import QDesktopServices, QIcon
-from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView, QWidget, QHBoxLayout
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
-    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider
+    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, LineEdit
 
 import conf
 
@@ -104,14 +104,38 @@ class Settings(FluentWindow):
         for row, student in enumerate(students['students']):
             table.setItem(row, 0, QTableWidgetItem(student['name']))
             table.setItem(row, 1, QTableWidgetItem(str(student['id'])))
+
+            # 初始化 slider
             slider_weight = Slider(Qt.Orientation.Horizontal)
+            slider_weight.setObjectName('slider_weight')
             slider_weight.setSingleStep(1)
             slider_weight.setPageStep(1)
             slider_weight.setRange(1, 50)
             slider_weight.setValue(student['weight'])
-            slider_weight.setToolTip(f"{student['weight']}")
-            slider_weight.valueChanged.connect(lambda value, slider=slider_weight: slider.setToolTip(f"{value}"))
-            table.setCellWidget(row, 2, slider_weight)
+            #slider_weight.setToolTip(f"{student['weight']}")
+            slider_weight.setTracking(True)
+
+            # 初始化提示
+            tip = LineEdit()
+            tip.setEnabled(False)
+            tip.setText(str(slider_weight.value()))
+            tip.setFixedWidth(47)
+            slider_weight.valueChanged.connect(lambda: tip.setText(str(slider_weight.value())))
+
+            # 初始化布局
+            layout_weight = QHBoxLayout()
+            layout_weight.setSpacing(3)
+            layout_weight.setContentsMargins(0, 0, 0, 0)
+            layout_weight.addWidget(slider_weight)
+            layout_weight.addWidget(tip)
+
+            # 初始化组件
+            widget_weight = QWidget()
+            widget_weight.setLayout(layout_weight)
+
+            # 添加 cellWidget
+            table.setCellWidget(row, 2, widget_weight)
+
             btn_active = SwitchButton()
             btn_active.setOnText('开')
             btn_active.setOffText('关')
@@ -132,8 +156,7 @@ class Settings(FluentWindow):
             # logger.debug(f"正在保存学生信息。第 {row} 行。")
             name = table.item(row, 0).text()
             id_ = int(table.item(row, 1).text())
-            # weight = int(table.item(row, 2).text())
-            weight = table.cellWidget(row, 2).value()
+            weight = table.cellWidget(row, 2).findChild(Slider, 'slider_weight').value()
             is_active = table.cellWidget(row, 3).isChecked()
             students["students"][row] = {"name": name, "id": id_, "weight": weight, "active": is_active}
 
