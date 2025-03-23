@@ -5,12 +5,12 @@ import os
 import sys
 
 from PyQt6 import uic
-from PyQt6.QtCore import QUrl, pyqtSignal, QSharedMemory
+from PyQt6.QtCore import QUrl, pyqtSignal, QSharedMemory, Qt
 from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
-    InfoBarIcon, FlyoutAnimationType, SwitchButton
+    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider
 
 import conf
 
@@ -104,7 +104,14 @@ class Settings(FluentWindow):
         for row, student in enumerate(students['students']):
             table.setItem(row, 0, QTableWidgetItem(student['name']))
             table.setItem(row, 1, QTableWidgetItem(str(student['id'])))
-            table.setItem(row, 2, QTableWidgetItem(str(student['weight'])))
+            slider_weight = Slider(Qt.Orientation.Horizontal)
+            slider_weight.setSingleStep(1)
+            slider_weight.setPageStep(1)
+            slider_weight.setRange(1, 50)
+            slider_weight.setValue(student['weight'])
+            slider_weight.setToolTip(f"{student['weight']}")
+            slider_weight.valueChanged.connect(lambda value, slider=slider_weight: slider.setToolTip(f"{value}"))
+            table.setCellWidget(row, 2, slider_weight)
             btn_active = SwitchButton()
             btn_active.setOnText('开')
             btn_active.setOffText('关')
@@ -125,7 +132,8 @@ class Settings(FluentWindow):
             # logger.debug(f"正在保存学生信息。第 {row} 行。")
             name = table.item(row, 0).text()
             id_ = int(table.item(row, 1).text())
-            weight = int(table.item(row, 2).text())
+            # weight = int(table.item(row, 2).text())
+            weight = table.cellWidget(row, 2).value()
             is_active = table.cellWidget(row, 3).isChecked()
             students["students"][row] = {"name": name, "id": id_, "weight": weight, "active": is_active}
 
