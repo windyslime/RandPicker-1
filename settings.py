@@ -120,7 +120,7 @@ class Settings(FluentWindow):
             tip.setEnabled(False)
             tip.setText(str(slider_weight.value()))
             tip.setFixedWidth(47)
-            slider_weight.valueChanged.connect(lambda: tip.setText(str(slider_weight.value())))
+            slider_weight.valueChanged.connect(lambda value, t=tip, s=slider_weight: t.setText(str(value)))
 
             # 初始化布局
             layout_weight = QHBoxLayout()
