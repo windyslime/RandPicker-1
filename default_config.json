@@ -1,7 +1,6 @@
 {
   "General": {
-    "scale": "1.0",
-    "version": "v1.0.0"
+    "scale": "1"
   },
   "UI": {
     "avatar": "false",

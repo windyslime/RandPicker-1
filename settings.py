@@ -245,6 +245,7 @@ class Settings(FluentWindow):
         edge_distance = int(conf.get_ini('UI', 'edge_distance'))
         hidden_width = int(conf.get_ini('UI', 'hidden_width'))
         avatar = conf.get_ini('UI', 'avatar') == 'true'
+        scale = int(conf.get_ini('General', 'scale')) * 100
 
         # 设置控件初始值
         self.uiInterface.avatar_size.setValue(avatar_size)
@@ -256,16 +257,19 @@ class Settings(FluentWindow):
         self.uiInterface.avatar.setOffText('关')
         self.uiInterface.edge_distance.setValue(edge_distance)
         self.uiInterface.hidden_width.setValue(hidden_width)
+        self.uiInterface.scale.setValue(scale)
 
         # 设置标签初始值
         self.uiInterface.avatar_size_label.setText(str(avatar_size))
         self.uiInterface.edge_distance_label.setText(str(edge_distance))
         self.uiInterface.hidden_width_label.setText(str(hidden_width))
+        self.uiInterface.scale_label.setText(str(scale))
 
         # 绑定滑块值变化事件
         self.uiInterface.avatar_size.valueChanged.connect(lambda value: self.uiInterface.avatar_size_label.setText(str(value)))
         self.uiInterface.edge_distance.valueChanged.connect(lambda value: self.uiInterface.edge_distance_label.setText(str(value)))
         self.uiInterface.hidden_width.valueChanged.connect(lambda value: self.uiInterface.hidden_width_label.setText(str(value)))
+        self.uiInterface.scale.valueChanged.connect(lambda value: self.uiInterface.scale_label.setText(str(value)))
 
         # 绑定保存按钮事件
         self.uiInterface.save_ui.clicked.connect(lambda: self.save_ui_settings())
@@ -277,6 +281,7 @@ class Settings(FluentWindow):
         edge_distance = self.uiInterface.edge_distance.value()
         hidden_width = self.uiInterface.hidden_width.value()
         avatar = 'true' if self.uiInterface.avatar.isChecked() else 'false'
+        scale = self.uiInterface.scale.value() / 100
 
         # 更新配置文件
         config = conf.config
@@ -288,6 +293,7 @@ class Settings(FluentWindow):
         config['UI']['edge_distance'] = str(edge_distance)
         config['UI']['hidden_width'] = str(hidden_width)
         config['UI']['avatar'] = avatar
+        config['General']['scale'] = str(scale)
         with open('config.ini', 'w', encoding='utf-8') as f:
             config.write(f)
 

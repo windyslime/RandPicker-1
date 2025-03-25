@@ -255,7 +255,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 
 if __name__ == "__main__":
-    os.environ['QT_SCALE_FACTOR'] = str(conf.get_ini('General', 'scale'))
+    os.environ['QT_SCALE_FACTOR'] = str(float(conf.get_ini('General', 'scale')))
     share.create(1)
     app = QApplication(sys.argv)
     logger.info(f"RandPicker 启动。缩放系数 {os.environ['QT_SCALE_FACTOR']}。")
