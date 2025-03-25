@@ -2,5 +2,12 @@
   "General": {
     "scale": "1.0",
     "version": "v1.0.0"
+  },
+  "UI": {
+    "avatar": "false",
+    "edge_hide": "true",
+    "edge_distance": "20",
+    "hidden_width": "20",
+    "avatar_size": "32"
   }
 }
