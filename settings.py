@@ -245,7 +245,7 @@ class Settings(FluentWindow):
         edge_distance = int(conf.get_ini('UI', 'edge_distance'))
         hidden_width = int(conf.get_ini('UI', 'hidden_width'))
         avatar = conf.get_ini('UI', 'avatar') == 'true'
-        scale = int(conf.get_ini('General', 'scale')) * 100
+        scale = int(float(conf.get_ini('General', 'scale')) * 100)
 
         # 设置控件初始值
         self.uiInterface.avatar_size.setValue(avatar_size)
