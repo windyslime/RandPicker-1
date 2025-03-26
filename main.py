@@ -7,8 +7,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QMouseEvent, QIcon, QPixmap, QPainter, QPainterPath
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
 from loguru import logger
-from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, AvatarWidget, \
-    PrimaryPushButton
+from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton
 
 import conf
 from settings import open_settings, share
@@ -87,7 +86,7 @@ class Widget(QWidget):
             if window_geometry.left() < screen_geometry.left() or window_geometry.right() > screen_geometry.right():
                 # 计算窗口应该显示的位置
                 if window_geometry.left() < screen_geometry.left():
-                    window_geometry.moveLeft(screen_geometry.left()  + edge_distance)
+                    window_geometry.moveLeft(screen_geometry.left() + edge_distance)
                 else:
                     window_geometry.moveRight(screen_geometry.right() - window_geometry.width())
                 self.setGeometry(window_geometry)
@@ -135,7 +134,6 @@ class Widget(QWidget):
             self.show_avatar(avatar_path)
         self.is_picking = False
 
-    
     def clear(self):
         if not self.is_picking:
             name = self.findChild(QLabel, 'name')
@@ -204,7 +202,8 @@ class Widget(QWidget):
         avatar.setStyleSheet(f'border-radius: {avatar_size // 2}px; background-color: transparent;')
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.MouseButton.LeftButton and conf.get_ini('UI', 'edge_hide') == 'true' and self.r_Position is not None:
+        if event.button() == Qt.MouseButton.LeftButton and conf.get_ini('UI',
+                                                                        'edge_hide') == 'true' and self.r_Position is not None:
             screen = QApplication.screenAt(event.globalPosition().toPoint())
             if not screen:
                 screen = QApplication.primaryScreen()
@@ -234,7 +233,6 @@ class Widget(QWidget):
                 window_geometry.moveBottom(screen_geometry.bottom())
                 logger.info('窗口从下边缘弹出。')'''
             event.accept()
-
 
 
 class SystemTrayIcon(QSystemTrayIcon):

@@ -10,7 +10,7 @@ from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView, QWidget, QHBoxLayout, QFileDialog
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
-    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, LineEdit, MessageBox
+    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, LineEdit, MessageBox, BodyLabel
 
 import conf
 
@@ -247,29 +247,40 @@ class Settings(FluentWindow):
         avatar = conf.get_ini('UI', 'avatar') == 'true'
         scale = int(float(conf.get_ini('General', 'scale')) * 100)
 
+        slider_avatar_size = self.findChild(Slider, 'avatar_size')
+        label_avatar_size = self.findChild(BodyLabel, 'avatar_size_label')
+        btn_edge_hide = self.findChild(SwitchButton, 'edge_hide')
+        btn_avatar = self.findChild(SwitchButton, 'avatar')
+        slider_edge_distance = self.findChild(Slider, 'edge_distance')
+        label_edge_distance = self.findChild(BodyLabel, 'edge_distance_label')
+        slider_hidden_width = self.findChild(Slider, 'hidden_width')
+        label_hidden_width = self.findChild(BodyLabel, 'hidden_width_label')
+        slider_scale = self.findChild(Slider, 'scale')
+        label_scale = self.findChild(BodyLabel, 'scale_label')
+
         # 设置控件初始值
-        self.uiInterface.avatar_size.setValue(avatar_size)
-        self.uiInterface.edge_hide.setChecked(edge_hide)
-        self.uiInterface.edge_hide.setOnText('开')
-        self.uiInterface.edge_hide.setOffText('关')
-        self.uiInterface.avatar.setChecked(avatar)
-        self.uiInterface.avatar.setOnText('开')
-        self.uiInterface.avatar.setOffText('关')
-        self.uiInterface.edge_distance.setValue(edge_distance)
-        self.uiInterface.hidden_width.setValue(hidden_width)
-        self.uiInterface.scale.setValue(scale)
+        slider_avatar_size.setValue(avatar_size)
+        btn_edge_hide.setChecked(edge_hide)
+        btn_edge_hide.setOnText('开')
+        btn_edge_hide.setOffText('关')
+        btn_avatar.setChecked(avatar)
+        btn_avatar.setOnText('开')
+        btn_avatar.setOffText('关')
+        slider_edge_distance.setValue(edge_distance)
+        slider_hidden_width.setValue(hidden_width)
+        sliderscale.setValue(scale)
 
         # 设置标签初始值
-        self.uiInterface.avatar_size_label.setText(str(avatar_size))
-        self.uiInterface.edge_distance_label.setText(str(edge_distance))
-        self.uiInterface.hidden_width_label.setText(str(hidden_width))
-        self.uiInterface.scale_label.setText(str(scale))
+        label_avatar_size.setText(str(avatar_size))
+        label_edge_distance.setText(str(edge_distance))
+        label_hidden_width.setText(str(hidden_width))
+        label_scale.setText(str(scale))
 
         # 绑定滑块值变化事件
-        self.uiInterface.avatar_size.valueChanged.connect(lambda value: self.uiInterface.avatar_size_label.setText(str(value)))
-        self.uiInterface.edge_distance.valueChanged.connect(lambda value: self.uiInterface.edge_distance_label.setText(str(value)))
-        self.uiInterface.hidden_width.valueChanged.connect(lambda value: self.uiInterface.hidden_width_label.setText(str(value)))
-        self.uiInterface.scale.valueChanged.connect(lambda value: self.uiInterface.scale_label.setText(str(value)))
+        slider_avatar_size.valueChanged.connect(lambda value: label_avatar_size.setText(str(value)))
+        slider_edge_distance.valueChanged.connect(lambda value: label_edge_distance.setText(str(value)))
+        slider_hidden_width.valueChanged.connect(lambda value: label_hidden_width.setText(str(value)))
+        slider_scale.valueChanged.connect(lambda value: self.uiInterface.scale_label.setText(str(value)))
 
         # 绑定保存按钮事件
         self.uiInterface.save_ui.clicked.connect(lambda: self.save_ui_settings())
