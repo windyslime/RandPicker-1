@@ -177,5 +177,39 @@ def get_ini(section='General', key=''):
         return default[section][key]
     return None
 
+import configparser
+
+
+def write_ini(*args, file_path='config.ini'):
+    """
+    写入或更新指定 INI 文件的内容。
+
+    :param file_path: INI 文件的路径。默认是 config.ini。
+    :param args: 成对的 Section 和 Key 值，后面跟着对应的 Value 值。
+    """
+    if len(args) % 3 != 0:
+        raise ValueError("Arguments must be provided in triplets of (section, key, value).")
+
+    # 读取现有文件（如果存在）
+    config.read(file_path, encoding='utf-8')
+
+    # 准备数据
+    sections_data = {}
+    for i in range(0, len(args), 3):
+        section, key, value = args[i], args[i + 1], args[i + 2]
+        if section not in sections_data:
+            sections_data[section] = {}
+        sections_data[section][key] = value
+
+    # 更新/添加section和对应的键值对
+    for section, data in sections_data.items():
+        if not config.has_section(section):
+            config.add_section(section)
+        for key, value in data.items():
+            config.set(section, key, str(value))
+
+    # 将更改写回文件
+    with open(file_path, 'w', encoding='utf-8') as configfile:
+        config.write(configfile)
 
 config = configparser.ConfigParser()

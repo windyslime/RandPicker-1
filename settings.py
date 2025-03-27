@@ -293,19 +293,12 @@ class Settings(FluentWindow):
         avatar = 'true' if self.uiInterface.avatar.isChecked() else 'false'
         scale = self.uiInterface.scale.value() / 100
 
-        # 更新配置文件
-        config = conf.config
-        config.read('config.ini')
-        if 'UI' not in config:
-            config['UI'] = {}
-        config['UI']['avatar_size'] = str(avatar_size)
-        config['UI']['edge_hide'] = edge_hide
-        config['UI']['edge_distance'] = str(edge_distance)
-        config['UI']['hidden_width'] = str(hidden_width)
-        config['UI']['avatar'] = avatar
-        config['General']['scale'] = str(scale)
-        with open('config.ini', 'w', encoding='utf-8') as f:
-            config.write(f)
+        conf.write_ini('UI', 'avatar_size', str(avatar_size),
+                       'UI', 'edge_hide', edge_hide,
+                       'UI', 'edge_distance', str(edge_distance),
+                       'UI', 'hidden_width', str(hidden_width),
+                       'UI', 'avatar', avatar,
+                       'General', 'scale', str(scale))
 
         # 显示保存成功提示
         Flyout.create(
