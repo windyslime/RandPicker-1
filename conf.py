@@ -170,10 +170,10 @@ def get_ini(section='General', key=''):
     with open('./default_config.json', 'r', encoding='utf-8') as f:
         default = json.load(f)
     if section in config and key in config[section]:
-        logger.debug(f"已获取配置 {section} -> {key} {config[section][key]}")
+        logger.debug(f"已获取配置 {section} -> {key}。它的值是 {config[section][key]}。")
         return config[section][key]
     elif section in default and key in default[section]:
-        logger.debug(f"已获取默认配置 {section} -> {key} {default[section][key]}")
+        logger.debug(f"已获取默认配置 {section} -> {key}。它的值是 {default[section][key]}。 ")
         return default[section][key]
     return None
 

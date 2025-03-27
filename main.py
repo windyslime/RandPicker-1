@@ -83,12 +83,15 @@ class Widget(QWidget):
             window_geometry = self.geometry()
 
             # 如果窗口被隐藏在左边或右边，则恢复显示
-            if window_geometry.left() < screen_geometry.left() or window_geometry.right() > screen_geometry.right():
+            if window_geometry.left() < screen_geometry.left() or \
+                window_geometry.right() > screen_geometry.right() or \
+                window_geometry.top() < screen_geometry.top() or \
+                window_geometry.bottom() > screen_geometry.bottom():
                 # 计算窗口应该显示的位置
                 if window_geometry.left() < screen_geometry.left():
                     window_geometry.moveLeft(screen_geometry.left() + edge_distance)
                 else:
-                    window_geometry.moveRight(screen_geometry.right() - window_geometry.width())
+                    window_geometry.moveRight(screen_geometry.right() - edge_distance)
                 self.setGeometry(window_geometry)
                 logger.info('窗口恢复显示')
                 event.accept()
@@ -202,17 +205,16 @@ class Widget(QWidget):
         avatar.setStyleSheet(f'border-radius: {avatar_size // 2}px; background-color: transparent;')
 
     def mouseReleaseEvent(self, event: QMouseEvent):
+        screen = QApplication.screenAt(event.globalPosition().toPoint())
+        if not screen:
+            screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        screen_available = screen.availableGeometry()
+        edge_distance = int(conf.get_ini('UI', 'edge_distance'))
+        hidden_width = int(conf.get_ini('UI', 'hidden_width'))
+        window_geometry = self.geometry()
         if event.button() == Qt.MouseButton.LeftButton and conf.get_ini('UI',
                                                                         'edge_hide') == 'true' and self.r_Position is not None:
-            screen = QApplication.screenAt(event.globalPosition().toPoint())
-            if not screen:
-                screen = QApplication.primaryScreen()
-            screen_geometry = screen.geometry()
-            screen_available = screen.availableGeometry()
-            edge_distance = int(conf.get_ini('UI', 'edge_distance'))
-            hidden_width = int(conf.get_ini('UI', 'hidden_width'))
-            window_geometry = self.geometry()
-
             # 检测是否靠近屏幕边缘
             if window_geometry.left() < screen_geometry.left() + edge_distance:
                 # 靠左边缘
@@ -224,15 +226,18 @@ class Widget(QWidget):
                 window_geometry.moveLeft(screen_geometry.right() - hidden_width)
                 self.setGeometry(window_geometry)
                 logger.info('窗口贴靠到右边缘。')
-            '''elif window_geometry.y() > screen_available.top():
-                # 靠上边缘
-                window_geometry.moveTop(screen_available.top())
-                logger.info('窗口从上边缘弹出。')
-            elif window_geometry.bottom() > screen_available.bottom():
-                # 靠下边缘
-                window_geometry.moveBottom(screen_geometry.bottom())
-                logger.info('窗口从下边缘弹出。')'''
-            event.accept()
+
+            if window_geometry.top() < screen_geometry.top() + edge_distance:
+                window_geometry.moveTop(screen_geometry.top() + edge_distance)
+                self.setGeometry(window_geometry)
+                logger.info('窗口调整到屏幕顶部内。')
+            # 新增：靠近下边缘
+            if window_geometry.bottom() > screen_geometry.bottom() - edge_distance:
+                window_geometry.moveBottom(screen_geometry.bottom() - edge_distance)
+                self.setGeometry(window_geometry)
+                logger.info('窗口调整到屏幕底部内。')
+
+        event.accept()
 
 
 class SystemTrayIcon(QSystemTrayIcon):
