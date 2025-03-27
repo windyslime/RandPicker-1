@@ -268,7 +268,7 @@ class Settings(FluentWindow):
         btn_avatar.setOffText('关')
         slider_edge_distance.setValue(edge_distance)
         slider_hidden_width.setValue(hidden_width)
-        sliderscale.setValue(scale)
+        slider_scale.setValue(scale)
 
         # 设置标签初始值
         label_avatar_size.setText(str(avatar_size))
