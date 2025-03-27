@@ -152,8 +152,8 @@ class Widget(QWidget):
         if file_path is not None and os.path.exists(file_path):
             file_path = file_path
         elif os.path.exists('./img/stu/default.jpeg'):
-            file_path = './img/stu/default.jpeg'
             logger.warning(f"没有找到头像 {file_path}。使用默认头像。")
+            file_path = './img/stu/default.jpeg'
         else:
             avatar.setPixmap(QPixmap())
             avatar.setStyleSheet(f'border-radius: {avatar_size // 2}px; background-color: transparent;')

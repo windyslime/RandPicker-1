@@ -10,7 +10,7 @@ from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView, QWidget, QHBoxLayout, QFileDialog
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
-    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, LineEdit, MessageBox, BodyLabel
+    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, MessageBox, BodyLabel
 
 import conf
 
@@ -119,8 +119,7 @@ class Settings(FluentWindow):
             slider_weight.setTracking(True)
 
             # 初始化提示
-            tip = LineEdit()
-            tip.setEnabled(False)
+            tip = BodyLabel()
             tip.setText(str(slider_weight.value()))
             tip.setFixedWidth(47)
             slider_weight.valueChanged.connect(lambda value, t=tip, s=slider_weight: t.setText(str(value)))
@@ -128,7 +127,7 @@ class Settings(FluentWindow):
             # 初始化布局
             layout_weight = QHBoxLayout()
             layout_weight.setSpacing(3)
-            layout_weight.setContentsMargins(0, 0, 0, 0)
+            layout_weight.setContentsMargins(12, 0, 0, 0)
             layout_weight.addWidget(slider_weight)
             layout_weight.addWidget(tip)
 

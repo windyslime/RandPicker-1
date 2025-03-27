@@ -216,12 +216,15 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-!/students.json
+/students.json
 /.idea
-config.ini
+/config.ini
 
 # Backup Files
 /*.bak
 
 # Excel Files
 *.xls*
+
+# Students' Image
+/img/stu
