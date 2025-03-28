@@ -90,7 +90,7 @@ def excel2json(excel_path='./example.xlsx'):
     """
     从 Excel 文件 (.xls, .xlsx) 导入。
 
-    注意：第一栏要包含 weight, name 和 id. 即相对权重, 姓名和全局学号。
+    注意：第一栏要包含 weight, name, id 和 active. 即相对权重, 姓名, 全局学号和是否启用。
 
     :param excel_path: Excel 文件路径
     :return: 一个包含所有学生信息的字典
@@ -109,7 +109,7 @@ def csv2json(csv_path='./example.csv'):
     """
     从 CSV 文件导入。
 
-    注意：第一栏要包含 weight, name 和 id. 即相对权重, 姓名和全局学号。
+    注意：第一栏要包含 weight, name, id 和 active. 即相对权重, 姓名, 全局学号和是否启用。
 
     :param csv_path: CSV 文件路径
     :return: 一个包含所有学生信息的字典
@@ -195,8 +195,6 @@ def get_ini(section='General', key=''):
         logger.debug(f"已获取默认配置 {section} -> {key}。它的值是 {default[section][key]}。 ")
         return default[section][key]
     return None
-
-import configparser
 
 
 def write_ini(*args, file_path='config.ini'):
