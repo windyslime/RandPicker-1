@@ -154,6 +154,14 @@ class Settings(FluentWindow):
         # 绑定 Excel 导入按钮事件
         btn_import = self.findChild(PushButton, 'import_excel')
         btn_import.clicked.connect(lambda: self.import_excel())
+        
+        # CSV导入按钮检查（原students.ui中无此按钮）
+        btn_import_csv = self.findChild(PushButton, 'import_csv')
+        if btn_import_csv:
+            btn_import_csv.clicked.connect(lambda: self.import_csv())
+        
+        
+
 
     def import_excel(self):
         # 打开文件选择对话框
@@ -211,6 +219,63 @@ class Settings(FluentWindow):
                 self
             )
             logger.error(f'Excel导入错误: {str(e)}')
+            
+    def import_csv(self):
+        # 打开文件选择对话框
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "选择 CSV 文件",
+            "",
+            "CSV 文件 (*.csv)"
+        )
+
+        if not file_path:
+            return  # 用户取消了选择
+
+        try:
+            # 导入
+            students = conf.csv2json(file_path)
+
+            if not students or 'students' not in students or not students['students']:
+                MessageBox.warning(
+                    self,
+                    "导入失败",
+                    "CSV 文件中没有找到有效的学生数据。\n"
+                    "请确保您的表格中包含包含 weight，name，id 和 active 列。",
+                    self
+                )
+                return
+
+            # 更新表格显示
+            table = self.findChild(TableWidget, 'student_list')
+            table.setRowCount(len(students['students']))
+
+            for row, student in enumerate(students['students']):
+                table.setItem(row, 0, QTableWidgetItem(student['name']))
+                table.setItem(row, 1, QTableWidgetItem(str(student['id'])))
+                table.setItem(row, 2, QTableWidgetItem(str(student.get('weight', 1))))
+
+            # 显示成功提示
+            btn_import = self.findChild(PushButton, 'import_csv')
+            Flyout.create(
+                icon=InfoBarIcon.SUCCESS,
+                title='CSV导入成功',
+                content=f"已从{os.path.basename(file_path)}导入{len(students['students'])}条学生记录。",
+                target=btn_import,
+                parent=self,
+                isClosable=False,
+                aniType=FlyoutAnimationType.PULL_UP
+            )
+            logger.info(f'从CSV导入了{len(students["students"])}条学生记录')
+
+        except Exception as e:
+            MessageBox.critical(
+                self,
+                "导入错误",
+                f"导入CSV文件时发生错误：\n{str(e)}\n\n请确保CSV文件格式正确，并包含weight、name和id列。",
+                self
+            )
+            logger.error(f'CSV导入错误: {str(e)}')
 
     def save_students(self):
         table = self.findChild(TableWidget, 'student_list')

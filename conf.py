@@ -105,6 +105,25 @@ def excel2json(excel_path='./example.xlsx'):
     return students
 
 
+def csv2json(csv_path='./example.csv'):
+    """
+    从 CSV 文件导入。
+
+    注意：第一栏要包含 weight, name 和 id. 即相对权重, 姓名和全局学号。
+
+    :param csv_path: CSV 文件路径
+    :return: 一个包含所有学生信息的字典
+    """
+    sheet = pd.read_csv(csv_path)
+    students = {}
+    list_ = []
+    for i in sheet.index.values:
+        line = sheet.loc[i, ['weight', 'name', 'id', 'active']].to_dict()
+        list_.append(line)
+    students['students'] = list_
+    return students
+
+
 def write_conf(students=None):
     """
     写入学生信息。
