@@ -155,6 +155,7 @@ class Widget(QWidget):
         self.is_picking = False
 
     def clear(self):
+        global last_result
         if not self.is_picking:
             name = self.findChild(QLabel, 'name')
             id_ = self.findChild(QLabel, 'id')
@@ -163,6 +164,7 @@ class Widget(QWidget):
                 id_.setText(str(last_result['id']))
                 if self.is_avatar:
                     self.show_avatar(last_result['avatar'])
+                last_result = {}
                 logger.info(f'加载重载前的结果。{last_result}')
             else:
                 name.setText('无结果')
