@@ -10,7 +10,8 @@ from PyQt6.QtGui import QDesktopServices, QIcon, QIntValidator
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView, QWidget, QHBoxLayout, QFileDialog
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
-    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, MessageBox, BodyLabel, LineEdit, setTheme, ComboBox, Theme
+    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, MessageBox, BodyLabel, LineEdit, setTheme, ComboBox, Theme, \
+    ToolButton
 
 import conf
 
@@ -164,6 +165,83 @@ class Settings(FluentWindow):
         btn_reset_weight.clicked.connect(lambda: self.reset_weight())
         btn_reset_active = self.findChild(PushButton, 'reset_active')
         btn_reset_active.clicked.connect(lambda: self.reset_active())
+
+        # 添加学生
+        le_new_id = self.findChild(LineEdit, 'new_id')
+        slider_new_weight = self.findChild(Slider, 'new_weight')
+        label_new_weight = self.findChild(BodyLabel, 'new_weight_label')
+        btn_new_active = self.findChild(SwitchButton, 'new_active')
+        btn_new_save = self.findChild(ToolButton, 'new_save')
+        slider_new_weight.valueChanged.connect(lambda: label_new_weight.setText(str(slider_new_weight.value())))
+        btn_new_active.setOnText("开")
+        btn_new_active.setOffText("关")
+        btn_new_active.setChecked(True)
+        btn_new_save.setIcon(fIcon.SAVE)
+        btn_new_save.clicked.connect(lambda: self.new_student())
+        le_new_id.setValidator(QIntValidator(le_new_id))
+
+        # 删除学生
+        btn_del = self.findChild(ToolButton, 'del')
+        btn_del.setIcon(fIcon.DELETE)
+        btn_del.clicked.connect(lambda: table.removeRow(table.currentRow()))
+
+
+    def new_student(self):
+        le_new_name = self.findChild(LineEdit, 'new_name')
+        le_new_id = self.findChild(LineEdit, 'new_id')
+        slider_new_weight = self.findChild(Slider, 'new_weight')
+        btn_new_active = self.findChild(SwitchButton, 'new_active')
+        table = self.findChild(TableWidget, 'student_list')
+
+        if le_new_name.text() == '' or le_new_name.text().isspace() \
+            or le_new_id.text() == '':
+            return
+
+        row = table.rowCount()
+        table.setRowCount(table.rowCount() + 1)
+
+        table.setItem(row, 0, QTableWidgetItem(le_new_name.text()))
+        table.setItem(row, 1, QTableWidgetItem(le_new_id.text()))
+
+        # 初始化 slider
+        slider_weight = Slider(Qt.Orientation.Horizontal)
+        slider_weight.setObjectName('slider_weight')
+        slider_weight.setSingleStep(1)
+        slider_weight.setPageStep(1)
+        slider_weight.setRange(1, 50)
+        slider_weight.setValue(slider_new_weight.value())
+        slider_weight.setTracking(True)
+
+        # 初始化提示
+        tip = BodyLabel()
+        tip.setText(str(slider_weight.value()))
+        tip.setFixedWidth(47)
+        slider_weight.valueChanged.connect(lambda value, t=tip, s=slider_weight: t.setText(str(value)))
+
+        # 初始化布局
+        layout_weight = QHBoxLayout()
+        layout_weight.setSpacing(3)
+        layout_weight.setContentsMargins(12, 0, 0, 0)
+        layout_weight.addWidget(slider_weight)
+        layout_weight.addWidget(tip)
+
+        # 初始化组件
+        widget_weight = QWidget()
+        widget_weight.setLayout(layout_weight)
+
+        # 添加 cellWidget
+        table.setCellWidget(row, 2, widget_weight)
+
+        btn_active = SwitchButton()
+        btn_active.setOnText('开')
+        btn_active.setOffText('关')
+        btn_active.setChecked(btn_new_active.isChecked())
+        table.setCellWidget(row, 3, btn_active)
+
+        le_new_name.setText('')
+        le_new_id.setText('')
+        slider_new_weight.setValue(1)
+        btn_new_active.setChecked(True)
 
 
     def reset_weight(self):

@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 from random import choices
 
 from PyQt6 import uic
@@ -133,7 +134,7 @@ class Widget(QWidget):
         随机选人。
         """
         self.is_picking = True
-        # num = rand(1, conf.get_students_num())
+        random.seed()
         num = choices(conf.get_students_list(), weights=conf.get_weight(), k=1)[0]
         logger.info(f'随机数已生成。JSON 索引是 {num - 1}。它的选择权重是 {conf.get_all_weight()[num - 1]}。')
         self.student = conf.get(num)
