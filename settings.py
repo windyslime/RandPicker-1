@@ -10,7 +10,7 @@ from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView, QWidget, QHBoxLayout, QFileDialog
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
-    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, MessageBox, BodyLabel
+    InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, MessageBox, BodyLabel, setTheme, ComboBox, Theme
 
 import conf
 
@@ -320,6 +320,7 @@ class Settings(FluentWindow):
         label_hidden_width = self.findChild(BodyLabel, 'hidden_width_label')
         slider_scale = self.findChild(Slider, 'scale')
         label_scale = self.findChild(BodyLabel, 'scale_label')
+        combo_theme = self.findChild(ComboBox, 'theme')
 
         # 设置控件初始值
         slider_avatar_size.setValue(avatar_size)
@@ -332,6 +333,8 @@ class Settings(FluentWindow):
         slider_edge_distance.setValue(edge_distance)
         slider_hidden_width.setValue(hidden_width)
         slider_scale.setValue(scale)
+        combo_theme.addItems(['浅色', '深色', '跟随系统'])
+        combo_theme.setCurrentIndex(int(conf.get_ini('General', 'theme')))
 
         # 设置标签初始值
         label_avatar_size.setText(str(avatar_size))
@@ -356,13 +359,23 @@ class Settings(FluentWindow):
         hidden_width = self.uiInterface.hidden_width.value()
         avatar = 'true' if self.uiInterface.avatar.isChecked() else 'false'
         scale = self.uiInterface.scale.value() / 100
+        theme = self.findChild(ComboBox, 'theme')
 
         conf.write_ini('UI', 'avatar_size', str(avatar_size),
                        'UI', 'edge_hide', edge_hide,
                        'UI', 'edge_distance', str(edge_distance),
                        'UI', 'hidden_width', str(hidden_width),
                        'UI', 'avatar', avatar,
-                       'General', 'scale', str(scale))
+                       'General', 'scale', str(scale),
+                       'General', 'theme', str(theme.currentIndex()))
+
+        if theme.currentIndex() == 0:
+            tg_theme = Theme.LIGHT
+        elif theme.currentIndex() == 1:
+            tg_theme = Theme.DARK
+        else:
+            tg_theme = Theme.AUTO
+        setTheme(tg_theme)
 
         # 显示保存成功提示
         Flyout.create(

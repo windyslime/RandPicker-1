@@ -7,7 +7,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QMouseEvent, QIcon, QPixmap, QPainter, QPainterPath
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
 from loguru import logger
-from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton
+from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton, isDarkTheme, setTheme, Theme, qconfig
 
 import conf
 from settings import open_settings, share
@@ -16,7 +16,12 @@ from settings import open_settings, share
 QApplication.setHighDpiScaleFactorRoundingPolicy(
     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
+widget = None
+
 logger.add("./log/RandPicker_{time}.log", rotation="1 MB", encoding="utf-8", retention="1 minute")
+
+# 自动切换主题
+qconfig.themeChanged.connect(lambda: reload_widget())
 
 
 class Widget(QWidget):
@@ -38,10 +43,20 @@ class Widget(QWidget):
 
     def init_ui(self):
         self.is_avatar = True if conf.get_ini('UI', 'avatar') == 'true' else False
-        if self.is_avatar:
-            uic.loadUi("./ui/widget.ui", self)
+        # 设置主题
+        if conf.get_ini('General', 'theme') == '0':
+            setTheme(Theme.LIGHT)
+        elif conf.get_ini('General', 'theme') == '1':
+            setTheme(Theme.DARK)
         else:
-            uic.loadUi("./ui/widget-no-avatar.ui", self)
+            setTheme(Theme.AUTO)
+
+        if self.is_avatar:
+            uic.loadUi(f"./ui{'/dark/' if isDarkTheme() else '/'}widget.ui", self)
+        else:
+            uic.loadUi(f"./ui{'/dark/' if isDarkTheme() else '/'}widget-no-avatar.ui", self)
+
+        logger.info(f"设置主题：{"深色" if isDarkTheme() else "浅色"}")
 
         # 设置窗口无边框和透明背景
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
@@ -240,6 +255,11 @@ class Widget(QWidget):
         event.accept()
 
 
+    def closeEvent(self, a0):
+        self.systemTrayIcon.hide()
+        self.systemTrayIcon.deleteLater()
+
+
 class SystemTrayIcon(QSystemTrayIcon):
 
     def __init__(self, parent):
@@ -255,6 +275,19 @@ class SystemTrayIcon(QSystemTrayIcon):
             Action(fIcon.CLOSE, '关闭', triggered=lambda: sys.exit()),
         ])
         self.setContextMenu(self.menu)
+
+def reload_widget():
+    global widget
+    if widget.isVisible():
+        widget.close()
+    logger.debug("重载浮窗")
+    init()
+
+def init():
+    global widget
+    widget = Widget()
+    widget.show()
+    widget.raise_()
 
 
 if __name__ == "__main__":
@@ -278,9 +311,7 @@ if __name__ == "__main__":
         sys.exit(-1)
     logger.info("欢迎。")
     conf.check_config()
-    widget = Widget()
-    widget.show()
-    widget.raise_()
+    init()
 
     app.setQuitOnLastWindowClosed(False)
 
