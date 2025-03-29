@@ -4,7 +4,7 @@ import random
 from random import choices
 
 from PyQt6 import uic
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QColor, QMouseEvent, QIcon, QPixmap, QPainter, QPainterPath
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame, QLayout
 from loguru import logger
@@ -20,6 +20,7 @@ QApplication.setHighDpiScaleFactorRoundingPolicy(
 
 widget = None
 last_result = {}
+last_pos = QPoint()
 
 logger.add("./log/RandPicker_{time}.log", rotation="1 MB", encoding="utf-8", retention="1 minute")
 
@@ -47,6 +48,7 @@ class Widget(QWidget):
         self.systemTrayIcon.show()
 
     def init_ui(self):
+        global last_pos
         self.is_avatar = True if conf.get_ini('UI', 'avatar') == 'true' else False
         # 设置主题
         if conf.get_ini('General', 'theme') == '0':
@@ -76,6 +78,9 @@ class Widget(QWidget):
                                 Qt.WindowType.Tool)
 
         self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+
+        if last_pos:
+            self.move(last_pos)
 
         background = self.findChild(QFrame, 'backgnd')
         shadow_effect = QGraphicsDropShadowEffect(self)
@@ -315,10 +320,11 @@ class Widget(QWidget):
         event.accept()
 
     def closeEvent(self, a0):
-        global last_result
+        global last_result, last_pos
         self.systemTrayIcon.hide()
         self.systemTrayIcon.deleteLater()
         last_result = self.student
+        last_pos = self.pos()
 
 
 class SystemTrayIcon(QSystemTrayIcon):
