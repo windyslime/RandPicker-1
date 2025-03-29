@@ -7,7 +7,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QMouseEvent, QIcon, QPixmap, QPainter, QPainterPath
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
 from loguru import logger
-from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton, isDarkTheme, setTheme, Theme, qconfig
+from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton, \
+    isDarkTheme, setTheme, Theme, qconfig
 
 import conf
 from settings import open_settings, share
@@ -99,9 +100,9 @@ class Widget(QWidget):
 
             # 如果窗口被隐藏在左边或右边，则恢复显示
             if window_geometry.left() < screen_geometry.left() or \
-                window_geometry.right() > screen_geometry.right() or \
-                window_geometry.top() < screen_geometry.top() or \
-                window_geometry.bottom() > screen_geometry.bottom():
+                    window_geometry.right() > screen_geometry.right() or \
+                    window_geometry.top() < screen_geometry.top() or \
+                    window_geometry.bottom() > screen_geometry.bottom():
                 # 计算窗口应该显示的位置
                 if window_geometry.left() < screen_geometry.left():
                     window_geometry.moveLeft(screen_geometry.left() + edge_distance)
@@ -224,7 +225,6 @@ class Widget(QWidget):
         if not screen:
             screen = QApplication.primaryScreen()
         screen_geometry = screen.geometry()
-        screen_available = screen.availableGeometry()
         edge_distance = int(conf.get_ini('UI', 'edge_distance'))
         hidden_width = int(conf.get_ini('UI', 'hidden_width'))
         window_geometry = self.geometry()
@@ -254,7 +254,6 @@ class Widget(QWidget):
 
         event.accept()
 
-
     def closeEvent(self, a0):
         self.systemTrayIcon.hide()
         self.systemTrayIcon.deleteLater()
@@ -276,12 +275,14 @@ class SystemTrayIcon(QSystemTrayIcon):
         ])
         self.setContextMenu(self.menu)
 
+
 def reload_widget():
     global widget
     if widget.isVisible():
         widget.close()
     logger.debug("重载浮窗")
     init()
+
 
 def init():
     global widget

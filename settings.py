@@ -154,13 +154,10 @@ class Settings(FluentWindow):
         # 绑定 Excel 导入按钮事件
         btn_import_excel = self.findChild(PushButton, 'import_excel')
         btn_import_excel.clicked.connect(lambda: self.import_excel())
-        
+
         # 绑定 csv 导入按钮事件
         btn_import_csv = self.findChild(PushButton, 'import_csv')
         btn_import_csv.clicked.connect(lambda: self.import_csv())
-        
-        
-
 
     def import_excel(self):
         # 打开文件选择对话框
@@ -218,7 +215,7 @@ class Settings(FluentWindow):
                 self
             )
             logger.error(f'从 Excel 文件导入时发生错误: {str(e)}')
-            
+
     def import_csv(self):
         # 打开文件选择对话框
         file_path, _ = QFileDialog.getOpenFileName(
