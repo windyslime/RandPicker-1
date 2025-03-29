@@ -38,10 +38,11 @@ class Widget(QWidget):
         self.r_Position = None
         self.is_picking = False
         self.is_avatar = False
+        self.animation = None
         self.student = last_result
         self.init_ui()
         self.setWindowIcon(QIcon('./img/Logo.png'))
-        self.systemTrayIcon = SystemTrayIcon(self)
+        self.systemTrayIcon = SystemTrayIcon(parent=self)
         self.systemTrayIcon.show()
 
     def init_ui(self):
