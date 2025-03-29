@@ -5,10 +5,10 @@ from random import choices
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QMouseEvent, QIcon, QPixmap, QPainter, QPainterPath
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame, QLayout
 from loguru import logger
 from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton, \
-    isDarkTheme, setTheme, Theme, qconfig
+    isDarkTheme, setTheme, Theme, qconfig, PixmapLabel
 
 import conf
 from settings import open_settings, share
@@ -72,6 +72,8 @@ class Widget(QWidget):
         else:
             self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint |
                                 Qt.WindowType.Tool)
+
+        self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
         background = self.findChild(QFrame, 'backgnd')
         shadow_effect = QGraphicsDropShadowEffect(self)
@@ -176,7 +178,7 @@ class Widget(QWidget):
         logger.warning('没有清除结果，因为正在选人。')
 
     def show_avatar(self, file_path='./img/stu/default.jpeg'):
-        avatar = self.findChild(QLabel, 'avatar')
+        avatar = self.findChild(PixmapLabel, 'avatar')
         avatar_size = int(conf.get_ini('UI', 'avatar_size'))
         if file_path is not None and os.path.exists(file_path):
             file_path = file_path

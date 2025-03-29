@@ -55,8 +55,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>658</width>
-        <height>669</height>
+        <width>642</width>
+        <height>739</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -433,14 +433,14 @@
               <item>
                <widget class="StrongBodyLabel" name="StrongBodyLabel_3">
                 <property name="text">
-                 <string>头像半径</string>
+                 <string>头像大小</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="CaptionLabel" name="CaptionLabel_5">
                 <property name="text">
-                 <string>调整浮窗中显示的头像半径大小</string>
+                 <string>调整浮窗中显示的头像大小</string>
                 </property>
                 <property name="lightColor" stdset="0">
                  <color alpha="150">
@@ -469,7 +469,7 @@
                </size>
               </property>
               <property name="text">
-               <string>100</string>
+               <string>55</string>
               </property>
              </widget>
             </item>
@@ -494,13 +494,13 @@
                </size>
               </property>
               <property name="minimum">
-               <number>20</number>
+               <number>55</number>
               </property>
               <property name="maximum">
-               <number>64</number>
+               <number>120</number>
               </property>
               <property name="value">
-               <number>32</number>
+               <number>55</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>

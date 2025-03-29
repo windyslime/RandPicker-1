@@ -159,6 +159,26 @@ class Settings(FluentWindow):
         btn_import_csv = self.findChild(PushButton, 'import_csv')
         btn_import_csv.clicked.connect(lambda: self.import_file('csv'))
 
+        # 绑定重置按钮事件
+        btn_reset_weight = self.findChild(PushButton, 'reset_weight')
+        btn_reset_weight.clicked.connect(lambda: self.reset_weight())
+        btn_reset_active = self.findChild(PushButton, 'reset_active')
+        btn_reset_active.clicked.connect(lambda: self.reset_active())
+
+
+    def reset_weight(self):
+        table = self.findChild(TableWidget, 'student_list')
+        for row in range(0, table.rowCount()):
+            table.cellWidget(row, 2).findChild(Slider, 'slider_weight').setValue(1)
+        logger.info("重置了所有学生的权重为 1。")
+
+
+    def reset_active(self):
+        table = self.findChild(TableWidget, 'student_list')
+        for row in range(0, table.rowCount()):
+            table.cellWidget(row, 3).setChecked(True)
+        logger.info("重置了所有学生的启用为 True。")
+
 
     def import_file(self, file_type='excel'):
         """
