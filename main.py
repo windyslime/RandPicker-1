@@ -18,6 +18,7 @@ QApplication.setHighDpiScaleFactorRoundingPolicy(
     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
 widget = None
+last_result = {}
 
 logger.add("./log/RandPicker_{time}.log", rotation="1 MB", encoding="utf-8", retention="1 minute")
 
@@ -37,6 +38,7 @@ class Widget(QWidget):
         self.r_Position = None
         self.is_picking = False
         self.is_avatar = False
+        self.student = last_result
         self.init_ui()
         self.setWindowIcon(QIcon('./img/Logo.png'))
         self.systemTrayIcon = SystemTrayIcon(self)
@@ -85,8 +87,7 @@ class Widget(QWidget):
         btn_clear = self.findChild(PushButton, 'btn_clear')
         btn_clear.clicked.connect(lambda: self.clear())
 
-        if self.is_avatar:
-            self.show_avatar()
+        self.clear()
 
     def mousePressEvent(self, event: QMouseEvent):
         edge_distance = int(conf.get_ini('UI', 'edge_distance'))
@@ -132,24 +133,24 @@ class Widget(QWidget):
         # num = rand(1, conf.get_students_num())
         num = choices(conf.get_students_list(), weights=conf.get_weight(), k=1)[0]
         logger.info(f'随机数已生成。JSON 索引是 {num - 1}。它的选择权重是 {conf.get_all_weight()[num - 1]}。')
-        student = conf.get(num)
-        logger.debug(f'已获取 JSON 索引是 {num - 1} 的学生信息。{student}')
+        self.student = conf.get(num)
+        logger.debug(f'已获取 JSON 索引是 {num - 1} 的学生信息。{self.student}')
         name = self.findChild(QLabel, 'name')
         id_ = self.findChild(QLabel, 'id')
-        name.setText(f'{str(student['id'])[-2:]} {student['name']}')
-        id_.setText(str(student['id']))
+        name.setText(f'{str(self.student['id'])[-2:]} {self.student['name']}')
+        id_.setText(str(self.student['id']))
 
         if self.is_avatar:
             # 设置头像
             avatar_path = None
             # 尝试不同的图片格式
             for ext in ['png', 'jpg', 'jpeg']:
-                temp_path = f'./img/stu/{student['id']}.{ext}'
+                temp_path = f'./img/stu/{self.student['id']}.{ext}'
                 if os.path.exists(temp_path):
                     avatar_path = temp_path
-                    logger.success(f"找到了学生 {student['id']} 的头像 {student['id']}.{ext}。")
+                    logger.success(f"找到了学生 {self.student['id']} 的头像 {self.student['id']}.{ext}。")
                     break
-
+            self.student['avatar'] = avatar_path
             self.show_avatar(avatar_path)
         self.is_picking = False
 
@@ -157,12 +158,19 @@ class Widget(QWidget):
         if not self.is_picking:
             name = self.findChild(QLabel, 'name')
             id_ = self.findChild(QLabel, 'id')
-            name.setText('无结果')
-            id_.setText('000000')
-            if self.is_avatar:
-                self.show_avatar()
-            logger.info('清除结果')
-            return 0
+            if last_result:
+                name.setText(f"{str(self.student['id'])[-2:]} {last_result['name']}")
+                id_.setText(last_result['id'])
+                if self.is_avatar:
+                    self.show_avatar(last_result['avatar'])
+                logger.info(f'加载重载前的结果。{last_result}')
+            else:
+                name.setText('无结果')
+                id_.setText('000000')
+                if self.is_avatar:
+                    self.show_avatar()
+                logger.info('清除结果')
+            return
         logger.warning('没有清除结果，因为正在选人。')
 
     def show_avatar(self, file_path='./img/stu/default.jpeg'):
@@ -255,8 +263,10 @@ class Widget(QWidget):
         event.accept()
 
     def closeEvent(self, a0):
+        global last_result
         self.systemTrayIcon.hide()
         self.systemTrayIcon.deleteLater()
+        last_result = self.student
 
 
 class SystemTrayIcon(QSystemTrayIcon):
@@ -278,6 +288,8 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 def reload_widget():
     global widget
+    if widget is None:
+        return
     if widget.isVisible():
         widget.close()
     logger.debug("重载浮窗")
