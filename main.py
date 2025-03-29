@@ -160,7 +160,7 @@ class Widget(QWidget):
             id_ = self.findChild(QLabel, 'id')
             if last_result:
                 name.setText(f"{str(self.student['id'])[-2:]} {last_result['name']}")
-                id_.setText(last_result['id'])
+                id_.setText(str(last_result['id']))
                 if self.is_avatar:
                     self.show_avatar(last_result['avatar'])
                 logger.info(f'加载重载前的结果。{last_result}')
