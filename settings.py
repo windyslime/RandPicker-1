@@ -63,9 +63,9 @@ class Settings(FluentWindow):
 
     def setup_ui(self):  # 设置所有页面
         self.stackedWidget.setCurrentIndex(0)  # 设置初始页面
-        self.setMinimumWidth(700)
+        self.setMinimumWidth(900)
         self.setMinimumHeight(400)
-        self.navigationInterface.setExpandWidth(200)
+        self.navigationInterface.setExpandWidth(160)
         self.navigationInterface.setCollapsible(False)
         self.setMicaEffectEnabled(True)  # 启用云母效果
 
@@ -74,7 +74,7 @@ class Settings(FluentWindow):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        width = int(screen_width * 0.6)
+        width = int(screen_width * 0.7)
         height = int(screen_height * 0.7)
 
         self.move(int(screen_width / 2 - width / 2), 150)
@@ -85,6 +85,15 @@ class Settings(FluentWindow):
         self.setup_about_interface()
         self.setup_student_edit_interface()
         self.setup_ui_interface()
+
+        theme = conf.get_ini('General', 'theme')
+        if theme == 0:
+            tg_theme = Theme.LIGHT
+        elif theme == 1:
+            tg_theme = Theme.DARK
+        else:
+            tg_theme = Theme.AUTO
+        setTheme(tg_theme)
 
     def setup_about_interface(self):  # 设置 关于 页面
         btn_github = self.findChild(PushButton, 'btn_github')
@@ -176,7 +185,7 @@ class Settings(FluentWindow):
         btn_new_active.setOnText("开")
         btn_new_active.setOffText("关")
         btn_new_active.setChecked(True)
-        btn_new_save.setIcon(fIcon.SAVE)
+        btn_new_save.setIcon(fIcon.ADD)
         btn_new_save.clicked.connect(lambda: self.new_student())
         le_new_id.setValidator(QIntValidator(le_new_id))
 
