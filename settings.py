@@ -478,9 +478,9 @@ class Settings(FluentWindow):
 
 def restart():
     global share
-    if share.attach():
+    if share.isAttached():
         share.detach()
-        share.deleteLater()
+        # share.deleteLater()
     logger.info("重新启动")
     os.execl(sys.executable, sys.executable, *sys.argv)
 
