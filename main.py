@@ -1,6 +1,5 @@
 import os
 import sys
-import random
 from random import choices
 
 from PyQt6 import uic
@@ -80,7 +79,14 @@ class Widget(QWidget):
         self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
         if last_pos:
+            logger.info(f'移动到重载前的位置 ({last_pos.x()}, {last_pos.y()})。')
             self.move(last_pos)
+        elif conf.get_ini('Last', 'x') and conf.get_ini('Last', 'y'):
+            x = int(conf.get_ini('Last', 'x'))
+            y = int(conf.get_ini('Last', 'y'))
+            pos = QPoint(x, y)
+            logger.info(f'移动到上次关闭的位置 ({x}, {y})。')
+            self.move(pos)
 
         background = self.findChild(QFrame, 'backgnd')
         shadow_effect = QGraphicsDropShadowEffect(self)
@@ -139,7 +145,6 @@ class Widget(QWidget):
         随机选人。
         """
         self.is_picking = True
-        random.seed()
         num = choices(conf.get_students_list(), weights=conf.get_weight(), k=1)[0]
         logger.info(f'随机数已生成。JSON 索引是 {num - 1}。它的选择权重是 {conf.get_all_weight()[num - 1]}。')
         self.student = conf.get(num)
@@ -241,7 +246,7 @@ class Widget(QWidget):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         from PyQt6.QtCore import QPropertyAnimation, QEasingCurve
-        
+
         screen = QApplication.screenAt(event.globalPosition().toPoint())
         if not screen:
             screen = QApplication.primaryScreen()
@@ -262,7 +267,8 @@ class Widget(QWidget):
                 else:
                     self.animation.setDuration(200)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
-                logger.debug(f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
+                logger.debug(
+                    f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
                 self.animation.setStartValue(window_geometry)
                 window_geometry.moveRight(screen_geometry.left() + hidden_width)
                 self.animation.setEndValue(window_geometry)
@@ -278,7 +284,8 @@ class Widget(QWidget):
                 else:
                     self.animation.setDuration(200)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
-                logger.debug(f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
+                logger.debug(
+                    f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
                 self.animation.setStartValue(window_geometry)
                 window_geometry.moveLeft(screen_geometry.right() - hidden_width)
                 self.animation.setEndValue(window_geometry)
@@ -294,7 +301,8 @@ class Widget(QWidget):
                 else:
                     self.animation.setDuration(200)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
-                logger.debug(f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
+                logger.debug(
+                    f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
                 self.animation.setStartValue(window_geometry)
                 window_geometry.moveTop(screen_geometry.top() + edge_distance)
                 self.animation.setEndValue(window_geometry)
@@ -310,7 +318,8 @@ class Widget(QWidget):
                 else:
                     self.animation.setDuration(200)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
-                logger.debug(f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
+                logger.debug(
+                    f'弹性动画状态: {elastic_enabled}, 持续时间: {self.animation.duration()}ms, 缓动曲线: {self.animation.easingCurve().type()}')
                 self.animation.setStartValue(window_geometry)
                 window_geometry.moveBottom(screen_geometry.bottom() - edge_distance)
                 self.animation.setEndValue(window_geometry)
@@ -325,6 +334,8 @@ class Widget(QWidget):
         self.systemTrayIcon.deleteLater()
         last_result = self.student
         last_pos = self.pos()
+        conf.write_ini('Last', 'x', last_pos.x(),
+                       'Last', 'y', last_pos.y())
 
 
 class SystemTrayIcon(QSystemTrayIcon):
@@ -338,8 +349,8 @@ class SystemTrayIcon(QSystemTrayIcon):
         ])
         self.menu.addSeparator()
         self.menu.addActions([
-            # Action(fIcon.SYNC, '重新启动', triggered=lambda: restart()),
-            Action(fIcon.CLOSE, '关闭', triggered=lambda: sys.exit()),
+            Action(fIcon.SYNC, '重新启动', triggered=lambda: restart()),  # 添加重启选项
+            Action(fIcon.CLOSE, '关闭', triggered=lambda: stop()),
         ])
         self.setContextMenu(self.menu)
 
@@ -359,6 +370,13 @@ def init():
     widget = Widget()
     widget.show()
     widget.raise_()
+
+
+def stop():
+    global widget
+    if widget.isVisible():
+        widget.close()
+    sys.exit()
 
 
 if __name__ == "__main__":

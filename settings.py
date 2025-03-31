@@ -185,7 +185,6 @@ class Settings(FluentWindow):
         btn_del.setIcon(fIcon.DELETE)
         btn_del.clicked.connect(lambda: table.removeRow(table.currentRow()))
 
-
     def new_student(self):
         le_new_name = self.findChild(LineEdit, 'new_name')
         le_new_id = self.findChild(LineEdit, 'new_id')
@@ -194,7 +193,7 @@ class Settings(FluentWindow):
         table = self.findChild(TableWidget, 'student_list')
 
         if le_new_name.text() == '' or le_new_name.text().isspace() \
-            or le_new_id.text() == '':
+                or le_new_id.text() == '':
             return
 
         row = table.rowCount()
@@ -243,20 +242,17 @@ class Settings(FluentWindow):
         slider_new_weight.setValue(1)
         btn_new_active.setChecked(True)
 
-
     def reset_weight(self):
         table = self.findChild(TableWidget, 'student_list')
         for row in range(0, table.rowCount()):
             table.cellWidget(row, 2).findChild(Slider, 'slider_weight').setValue(1)
         logger.info("重置了所有学生的权重为 1。")
 
-
     def reset_active(self):
         table = self.findChild(TableWidget, 'student_list')
         for row in range(0, table.rowCount()):
             table.cellWidget(row, 3).setChecked(True)
         logger.info("重置了所有学生的启用为 True。")
-
 
     def import_file(self, file_type='excel'):
         """
@@ -355,7 +351,6 @@ class Settings(FluentWindow):
                 self
             )
             logger.error(f'从文件导入时发生错误: {str(e)}')
-
 
     def save_students(self):
         table = self.findChild(TableWidget, 'student_list')

@@ -116,7 +116,7 @@ def excel2json(file_path='./example.xlsx'):
                 raise ValueError(f"文件为空或无效: {file_path}")
             except Exception:
                 raise ValueError(f"无法识别的文件格式: {file_path}")
-    
+
     students = {}
     list_ = []
     for i in sheet.index.values:
