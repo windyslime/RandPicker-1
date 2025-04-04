@@ -249,7 +249,7 @@
    <item>
     <widget class="CaptionLabel" name="CaptionLabel_2">
      <property name="text">
-      <string>Copyright © 2025 Wenxuan Shen  Jerry Wu, All Rights Reserved.</string>
+      <string>Copyright © 2025 Wenxuan Shen & Jerry Wu, All Rights Reserved.</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
