@@ -33,7 +33,7 @@
 ## 协议
 此项目 (RandPicker) 基于 GPL-3.0 许可证授权发布，详情请参阅 [LICENSE](LICENSE) 文件。
 
-Copyright © 2025 Wenxuan Shen.
+Copyright © 2025 Wenxuan Shen  Jerry Wu.
 
 ## 致谢
 ### 第三方库和框架
