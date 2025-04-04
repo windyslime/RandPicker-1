@@ -3,12 +3,12 @@ import sys
 from random import choices
 
 from PyQt6 import uic
-from PyQt6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve
+from PyQt6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QLocale
 from PyQt6.QtGui import QColor, QMouseEvent, QIcon, QPixmap, QPainter, QPainterPath, QPixmapCache
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame, QLayout
 from loguru import logger
 from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton, \
-    isDarkTheme, setTheme, Theme, qconfig, PixmapLabel
+    isDarkTheme, setTheme, Theme, qconfig, PixmapLabel, FluentTranslator, setThemeColor
 
 import conf
 from settings import open_settings, share, restart
@@ -17,10 +17,12 @@ from settings import open_settings, share, restart
 QApplication.setHighDpiScaleFactorRoundingPolicy(
     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
+# 建立几个空的全局变量
 widget = None
 last_result = {}
 last_pos = QPoint()
 
+# 记录日志
 logger.add("./log/RandPicker_{time}.log", rotation="1 MB", encoding="utf-8", retention="1 minute")
 
 # 自动切换主题
@@ -49,13 +51,6 @@ class Widget(QWidget):
     def init_ui(self):
         global last_pos
         self.is_avatar = True if conf.get_ini('UI', 'avatar') == 'true' else False
-        # 设置主题
-        if conf.get_ini('General', 'theme') == '0':
-            setTheme(Theme.LIGHT)
-        elif conf.get_ini('General', 'theme') == '1':
-            setTheme(Theme.DARK)
-        else:
-            setTheme(Theme.AUTO)
 
         ui_file = f"./ui{'/dark/' if isDarkTheme() else '/'}{'widget.ui' if self.is_avatar else 'widget-no-avatar.ui'}"
         uic.loadUi(ui_file, self)
@@ -376,6 +371,8 @@ def stop():
 if __name__ == "__main__":
     os.environ['QT_SCALE_FACTOR'] = str(float(conf.get_ini('General', 'scale')))
     app = QApplication(sys.argv)
+    translator = FluentTranslator(QLocale(QLocale.Language.Chinese, QLocale.Country.China))
+    app.installTranslator(translator)
     logger.info(f"RandPicker 启动。缩放系数 {os.environ['QT_SCALE_FACTOR']}。")
     if share.isAttached():
         logger.warning("有一个实例正在运行，或者上次没有正常退出。")
@@ -394,6 +391,17 @@ if __name__ == "__main__":
     share.create(1)
     logger.info("欢迎。")
     conf.check_config()
+    # 设置主题
+    if conf.get_ini('General', 'theme') == '0':
+        setTheme(Theme.LIGHT)
+    elif conf.get_ini('General', 'theme') == '1':
+        setTheme(Theme.DARK)
+    else:
+        setTheme(Theme.AUTO)
+    if isDarkTheme():
+        setThemeColor(conf.get_ini('Color', 'dark'))
+    else:
+        setThemeColor(conf.get_ini('Color', 'light'))
     init()
 
     app.setQuitOnLastWindowClosed(False)

@@ -6,12 +6,12 @@ import sys
 
 from PyQt6 import uic
 from PyQt6.QtCore import QUrl, pyqtSignal, QSharedMemory, Qt
-from PyQt6.QtGui import QDesktopServices, QIcon, QIntValidator
+from PyQt6.QtGui import QDesktopServices, QIcon, QIntValidator, QColor
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView, QWidget, QHBoxLayout, QFileDialog
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
     InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, MessageBox, BodyLabel, LineEdit, setTheme, ComboBox, Theme, \
-    ToolButton
+    ToolButton, ColorDialog, setThemeColor, qconfig, isDarkTheme
 
 import conf
 
@@ -140,8 +140,6 @@ class Settings(FluentWindow):
             table.setCellWidget(row, 2, widget_weight)
 
             btn_active = SwitchButton()
-            btn_active.setOnText('开')
-            btn_active.setOffText('关')
             if student['active']:
                 btn_active.setChecked(True)
             else:
@@ -173,8 +171,6 @@ class Settings(FluentWindow):
         btn_new_active = self.findChild(SwitchButton, 'new_active')
         btn_new_save = self.findChild(ToolButton, 'new_save')
         slider_new_weight.valueChanged.connect(lambda: label_new_weight.setText(str(slider_new_weight.value())))
-        btn_new_active.setOnText("开")
-        btn_new_active.setOffText("关")
         btn_new_active.setChecked(True)
         btn_new_save.setIcon(fIcon.ADD)
         btn_new_save.clicked.connect(lambda: self.new_student())
@@ -232,8 +228,6 @@ class Settings(FluentWindow):
         table.setCellWidget(row, 2, widget_weight)
 
         btn_active = SwitchButton()
-        btn_active.setOnText('开')
-        btn_active.setOffText('关')
         btn_active.setChecked(btn_new_active.isChecked())
         table.setCellWidget(row, 3, btn_active)
 
@@ -323,8 +317,6 @@ class Settings(FluentWindow):
                 widget_weight.setLayout(layout_weight)
                 table.setCellWidget(row, 2, widget_weight)
                 btn_active = SwitchButton()
-                btn_active.setOnText('开')
-                btn_active.setOffText('关')
                 if student['active']:
                     btn_active.setChecked(True)
                 else:
@@ -399,18 +391,14 @@ class Settings(FluentWindow):
         slider_scale = self.findChild(Slider, 'scale')
         label_scale = self.findChild(BodyLabel, 'scale_label')
         combo_theme = self.findChild(ComboBox, 'theme')
+        btn_color = self.findChild(PushButton, 'color')
+        label_color = self.findChild(BodyLabel, 'color_label')
 
         # 设置控件初始值
         slider_avatar_size.setValue(avatar_size)
         btn_edge_hide.setChecked(edge_hide)
-        btn_edge_hide.setOnText('开')
-        btn_edge_hide.setOffText('关')
         btn_avatar.setChecked(avatar)
-        btn_avatar.setOnText('开')
-        btn_avatar.setOffText('关')
         btn_elastic_animation.setChecked(elastic_animation)
-        btn_elastic_animation.setOnText('开')
-        btn_elastic_animation.setOffText('关')
         slider_edge_distance.setValue(edge_distance)
         slider_hidden_width.setValue(hidden_width)
         slider_scale.setValue(scale)
@@ -422,6 +410,7 @@ class Settings(FluentWindow):
         label_edge_distance.setText(str(edge_distance))
         label_hidden_width.setText(str(hidden_width))
         label_scale.setText(str(scale))
+        label_color.setText(conf.get_ini('Color', 'dark' if isDarkTheme() else 'light'))
 
         # 绑定滑块值变化事件
         slider_avatar_size.valueChanged.connect(lambda value: label_avatar_size.setText(str(value)))
@@ -429,8 +418,16 @@ class Settings(FluentWindow):
         slider_hidden_width.valueChanged.connect(lambda value: label_hidden_width.setText(str(value)))
         slider_scale.valueChanged.connect(lambda value: self.uiInterface.scale_label.setText(str(value)))
 
-        # 绑定保存按钮事件
+        # 绑定按钮事件
+        btn_color.clicked.connect(lambda: self.setup_color_dialog())
         self.uiInterface.save_ui.clicked.connect(lambda: self.save_ui_settings())
+
+    def setup_color_dialog(self):
+        label_color = self.findChild(BodyLabel, 'color_label')
+        dialog_color = ColorDialog(QColor(label_color.text()), '选择主题颜色', self, enableAlpha=False)
+        dialog_color.yesButton.setText('好')
+        dialog_color.colorChanged.connect(lambda color: label_color.setText(color.name()))
+        dialog_color.exec()
 
     def save_ui_settings(self):
         # 获取控件值
@@ -441,6 +438,7 @@ class Settings(FluentWindow):
         avatar = 'true' if self.uiInterface.avatar.isChecked() else 'false'
         scale = self.uiInterface.scale.value() / 100
         theme = self.findChild(ComboBox, 'theme')
+        color = self.findChild(BodyLabel, 'color_label')
 
         conf.write_ini('UI', 'avatar_size', str(avatar_size),
                        'UI', 'edge_hide', edge_hide,
@@ -449,7 +447,8 @@ class Settings(FluentWindow):
                        'UI', 'avatar', avatar,
                        'UI', 'elastic_animation', 'true' if self.uiInterface.elastic_animation.isChecked() else 'false',
                        'General', 'scale', str(scale),
-                       'General', 'theme', str(theme.currentIndex()))
+                       'General', 'theme', str(theme.currentIndex()),
+                       'Color', 'dark' if isDarkTheme() else 'light', color.text())
 
         if theme.currentIndex() == 0:
             tg_theme = Theme.LIGHT
@@ -458,6 +457,8 @@ class Settings(FluentWindow):
         else:
             tg_theme = Theme.AUTO
         setTheme(tg_theme)
+
+        setThemeColor(conf.get_ini('Color', 'dark' if isDarkTheme() else 'light'))
 
         # 显示保存成功提示
         Flyout.create(
@@ -469,6 +470,7 @@ class Settings(FluentWindow):
             isClosable=False,
             aniType=FlyoutAnimationType.PULL_UP
         )
+        color.setText(conf.get_ini('Color', 'dark' if isDarkTheme() else 'light'))
         logger.info('界面设置已保存')
 
     def closeEvent(self, event):

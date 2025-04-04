@@ -56,7 +56,7 @@
         <x>0</x>
         <y>0</y>
         <width>642</width>
-        <height>739</height>
+        <height>812</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -108,7 +108,7 @@
               <item>
                <widget class="CaptionLabel" name="CaptionLabel_9">
                 <property name="text">
-                 <string>调整应用颜色主题</string>
+                 <string>调整应用主题</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -138,6 +138,94 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="CardWidget" name="CardWidget_8">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>70</height>
+            </size>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <property name="leftMargin">
+             <number>16</number>
+            </property>
+            <property name="topMargin">
+             <number>16</number>
+            </property>
+            <property name="rightMargin">
+             <number>16</number>
+            </property>
+            <property name="bottomMargin">
+             <number>16</number>
+            </property>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="StrongBodyLabel" name="StrongBodyLabel_12">
+                <property name="text">
+                 <string>颜色</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="CaptionLabel" name="CaptionLabel_14">
+                <property name="text">
+                 <string>调整应用颜色</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+                <property name="lightColor" stdset="0">
+                 <color alpha="150">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </property>
+                <property name="darkColor" stdset="0">
+                 <color alpha="200">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="BodyLabel" name="color_label">
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>#114514</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="PushButton" name="color">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>选择颜色</string>
               </property>
              </widget>
             </item>
@@ -203,7 +291,7 @@
               </item>
              </layout>
             </item>
-            <item>
+            <item alignment="Qt::AlignRight">
              <widget class="BodyLabel" name="scale_label">
               <property name="maximumSize">
                <size>
@@ -388,7 +476,7 @@
               </item>
              </layout>
             </item>
-            <item>
+            <item alignment="Qt::AlignRight">
              <widget class="BodyLabel" name="avatar_size_label">
               <property name="maximumSize">
                <size>
@@ -572,12 +660,6 @@
             </item>
             <item alignment="Qt::AlignRight">
              <widget class="BodyLabel" name="edge_distance_label">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
               <property name="maximumSize">
                <size>
                 <width>40</width>
@@ -920,6 +1002,11 @@
   <customwidget>
    <class>ComboBox</class>
    <extends>QComboBox</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>QPushButton</extends>
    <header>qfluentwidgets</header>
   </customwidget>
  </customwidgets>
