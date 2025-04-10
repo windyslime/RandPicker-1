@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QHeaderView, QWidget
 from loguru import logger
 from qfluentwidgets import FluentWindow, FluentIcon as fIcon, PushButton, TableWidget, NavigationItemPosition, Flyout, \
     InfoBarIcon, FlyoutAnimationType, SwitchButton, Slider, MessageBox, BodyLabel, LineEdit, setTheme, ComboBox, Theme, \
-    ToolButton, ColorDialog, setThemeColor, qconfig, isDarkTheme
+    ToolButton, ColorDialog, setThemeColor, qconfig, isDarkTheme, CheckBox
 
 import conf
 
@@ -101,14 +101,15 @@ class Settings(FluentWindow):
         table.setWordWrap(True)
         table.setColumnCount(4)
         table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        table.setHorizontalHeaderLabels(['姓名', '学号', '权重', '启用'])
+        table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        table.setHorizontalHeaderLabels(['', '姓名', '学号', '权重'])
 
         students = conf.get_all_students()
         table.setRowCount(conf.get_students_num())
 
         for row, student in enumerate(students['students']):
-            table.setItem(row, 0, QTableWidgetItem(student['name']))
-            table.setItem(row, 1, QTableWidgetItem(str(student['id'])))
+            table.setItem(row, 1, QTableWidgetItem(student['name']))
+            table.setItem(row, 2, QTableWidgetItem(str(student['id'])))
 
             # 初始化 slider
             slider_weight = Slider(Qt.Orientation.Horizontal)
@@ -137,14 +138,14 @@ class Settings(FluentWindow):
             widget_weight.setLayout(layout_weight)
 
             # 添加 cellWidget
-            table.setCellWidget(row, 2, widget_weight)
+            table.setCellWidget(row, 3, widget_weight)
 
-            btn_active = SwitchButton()
+            btn_active = CheckBox()
             if student['active']:
                 btn_active.setChecked(True)
             else:
                 btn_active.setChecked(False)
-            table.setCellWidget(row, 3, btn_active)
+            table.setCellWidget(row, 0, btn_active)
 
         # 绑定保存按钮事件
         btn_save = self.findChild(PushButton, 'save_student')
@@ -195,8 +196,8 @@ class Settings(FluentWindow):
         row = table.rowCount()
         table.setRowCount(table.rowCount() + 1)
 
-        table.setItem(row, 0, QTableWidgetItem(le_new_name.text()))
-        table.setItem(row, 1, QTableWidgetItem(le_new_id.text()))
+        table.setItem(row, 1, QTableWidgetItem(le_new_name.text()))
+        table.setItem(row, 2, QTableWidgetItem(le_new_id.text()))
 
         # 初始化 slider
         slider_weight = Slider(Qt.Orientation.Horizontal)
@@ -225,11 +226,11 @@ class Settings(FluentWindow):
         widget_weight.setLayout(layout_weight)
 
         # 添加 cellWidget
-        table.setCellWidget(row, 2, widget_weight)
+        table.setCellWidget(row, 3, widget_weight)
 
-        btn_active = SwitchButton()
+        btn_active = CheckBox()
         btn_active.setChecked(btn_new_active.isChecked())
-        table.setCellWidget(row, 3, btn_active)
+        table.setCellWidget(row, 0, btn_active)
 
         le_new_name.setText('')
         le_new_id.setText('')
@@ -245,7 +246,7 @@ class Settings(FluentWindow):
     def reset_active(self):
         table = self.findChild(TableWidget, 'student_list')
         for row in range(0, table.rowCount()):
-            table.cellWidget(row, 3).setChecked(True)
+            table.cellWidget(row, 0).setChecked(True)
         logger.info("重置了所有学生的启用为 True。")
 
     def import_file(self, file_type='excel'):
@@ -293,8 +294,8 @@ class Settings(FluentWindow):
             table.setRowCount(len(students['students']))
 
             for row, student in enumerate(students['students']):
-                table.setItem(row, 0, QTableWidgetItem(student['name']))
-                table.setItem(row, 1, QTableWidgetItem(str(student['id'])))
+                table.setItem(row, 1, QTableWidgetItem(student['name']))
+                table.setItem(row, 2, QTableWidgetItem(str(student['id'])))
 
                 # 初始化第 2, 3 row 的 cellwidget
                 slider_weight = Slider(Qt.Orientation.Horizontal)
@@ -315,13 +316,13 @@ class Settings(FluentWindow):
                 layout_weight.addWidget(tip)
                 widget_weight = QWidget()
                 widget_weight.setLayout(layout_weight)
-                table.setCellWidget(row, 2, widget_weight)
-                btn_active = SwitchButton()
+                table.setCellWidget(row, 3, widget_weight)
+                btn_active = CheckBox()
                 if student['active']:
                     btn_active.setChecked(True)
                 else:
                     btn_active.setChecked(False)
-                table.setCellWidget(row, 3, btn_active)
+                table.setCellWidget(row, 0, btn_active)
 
             # 显示成功提示
             btn_import = self.findChild(PushButton, 'import_excel')
@@ -350,10 +351,10 @@ class Settings(FluentWindow):
 
         for row in range(0, table.rowCount()):
             # logger.debug(f"正在保存学生信息。第 {row} 行。")
-            name = table.item(row, 0).text()
-            id_ = int(table.item(row, 1).text())
-            weight = table.cellWidget(row, 2).findChild(Slider, 'slider_weight').value()
-            is_active = table.cellWidget(row, 3).isChecked()
+            name = table.item(row, 1).text()
+            id_ = int(table.item(row, 2).text())
+            weight = table.cellWidget(row, 3).findChild(Slider, 'slider_weight').value()
+            is_active = table.cellWidget(row, 0).isChecked()
             students["students"][row] = {"name": name, "id": id_, "weight": weight, "active": is_active}
 
         conf.write_conf(students)
