@@ -8,7 +8,7 @@ from PyQt6.QtGui import QColor, QMouseEvent, QIcon, QPixmap, QPainter, QPainterP
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QGraphicsDropShadowEffect, QSystemTrayIcon, QFrame, QLayout
 from loguru import logger
 from qfluentwidgets import PushButton, SystemTrayMenu, FluentIcon as fIcon, Action, Dialog, PrimaryPushButton, \
-    isDarkTheme, setTheme, Theme, qconfig, PixmapLabel, FluentTranslator, setThemeColor
+    isDarkTheme, setTheme, Theme, qconfig, PixmapLabel, FluentTranslator, setThemeColor,SystemThemeListener
 
 import conf
 from settings import open_settings, share, restart
@@ -47,6 +47,8 @@ class Widget(QWidget):
         self.setWindowIcon(QIcon('./img/Logo.png'))
         self.systemTrayIcon = SystemTrayIcon(parent=self)
         self.systemTrayIcon.show()
+        self.themeListener = SystemThemeListener(self)
+        self.themeListener.start()
 
     def init_ui(self):
         global last_pos
@@ -252,7 +254,7 @@ class Widget(QWidget):
                 elastic_enabled = conf.get_ini('UI', 'elastic_animation') == 'true'
                 if elastic_enabled:
                     self.animation.setDuration(300)
-                    self.animation.setEasingCurve(QEasingCurve.Type.OutQuad)
+                    self.animation.setEasingCurve(QEasingCurve.Type.OutBounce)
                 else:
                     self.animation.setDuration(150)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
@@ -269,7 +271,7 @@ class Widget(QWidget):
                 elastic_enabled = conf.get_ini('UI', 'elastic_animation') == 'true'
                 if elastic_enabled:
                     self.animation.setDuration(300)
-                    self.animation.setEasingCurve(QEasingCurve.Type.OutQuad)
+                    self.animation.setEasingCurve(QEasingCurve.Type.OutBounce)
                 else:
                     self.animation.setDuration(150)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
@@ -286,7 +288,7 @@ class Widget(QWidget):
                 elastic_enabled = conf.get_ini('UI', 'elastic_animation') == 'true'
                 if elastic_enabled:
                     self.animation.setDuration(300)
-                    self.animation.setEasingCurve(QEasingCurve.Type.OutQuad)
+                    self.animation.setEasingCurve(QEasingCurve.Type.OutBounce)
                 else:
                     self.animation.setDuration(150)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
@@ -303,7 +305,7 @@ class Widget(QWidget):
                 elastic_enabled = conf.get_ini('UI', 'elastic_animation') == 'true'
                 if elastic_enabled:
                     self.animation.setDuration(300)
-                    self.animation.setEasingCurve(QEasingCurve.Type.OutQuad)
+                    self.animation.setEasingCurve(QEasingCurve.Type.OutBounce)
                 else:
                     self.animation.setDuration(150)
                     self.animation.setEasingCurve(QEasingCurve.Type.Linear)
@@ -317,7 +319,7 @@ class Widget(QWidget):
 
         event.accept()
 
-    def closeEvent(self, a0):
+    def closeEvent(self, e):
         global last_result, last_pos
         self.systemTrayIcon.hide()
         self.systemTrayIcon.deleteLater()
@@ -325,6 +327,9 @@ class Widget(QWidget):
         last_pos = self.pos()
         conf.write_ini('Last', 'x', last_pos.x(),
                        'Last', 'y', last_pos.y())
+        self.themeListener.terminate()
+        self.themeListener.deleteLater()
+        super().closeEvent(e)
 
 
 class SystemTrayIcon(QSystemTrayIcon):
@@ -356,6 +361,10 @@ def reload_widget():
 
 def init():
     global widget
+    if isDarkTheme():
+        setThemeColor(conf.get_ini('Color', 'dark'))
+    else:
+        setThemeColor(conf.get_ini('Color', 'light'))
     widget = Widget()
     widget.show()
     widget.raise_()
@@ -398,10 +407,6 @@ if __name__ == "__main__":
         setTheme(Theme.DARK)
     else:
         setTheme(Theme.AUTO)
-    if isDarkTheme():
-        setThemeColor(conf.get_ini('Color', 'dark'))
-    else:
-        setThemeColor(conf.get_ini('Color', 'light'))
     init()
 
     app.setQuitOnLastWindowClosed(False)
