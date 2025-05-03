@@ -254,7 +254,7 @@ class Settings(FluentWindow):
     def reset_weight(self):  # 重置权重
         table = self.findChild(TableWidget, 'student_list')
         for row in range(0, table.rowCount()):
-            table.cellWidget(row, 2).findChild(Slider, 'slider_weight').setValue(1)
+            table.cellWidget(row, 3).findChild(Slider, 'slider_weight').setValue(1)
         logger.info("重置了所有学生的权重为 1。")
 
     def reset_active(self):  # 重置 启用
