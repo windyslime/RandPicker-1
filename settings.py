@@ -72,8 +72,8 @@ class Settings(FluentWindow):
         self.setup_ui()
 
     def init_nav(self):  # 设置侧边栏
-        self.addSubInterface(self.stuEditInterface, fIcon.EDIT, '学生信息编辑')
-        self.addSubInterface(self.groupEditInterface, fIcon.EDIT, '小组编辑')
+        self.addSubInterface(self.stuEditInterface, fIcon.EDIT, '学生编辑')
+        self.addSubInterface(self.groupEditInterface, fIcon.PEOPLE, '小组编辑')
         self.navigationInterface.addSeparator(NavigationItemPosition.BOTTOM)
         self.addSubInterface(self.uiInterface, fIcon.SETTING, '界面设置', NavigationItemPosition.BOTTOM)
         self.addSubInterface(self.aboutInterface, fIcon.INFO, '关于', NavigationItemPosition.BOTTOM)
@@ -112,7 +112,7 @@ class Settings(FluentWindow):
         btn_license.clicked.connect(
             lambda: QDesktopServices.openUrl(QUrl('https://github.com/xuanxuan1231/RandPicker/blob/main/LICENSE')))
 
-    def setup_student_edit_interface(self):  # 设置 学生信息编辑 页面
+    def setup_student_edit_interface(self):  # 设置 学生编辑 页面
         table = self.findChild(TableWidget, 'student_list')
         table.setBorderVisible(True)
         table.setBorderRadius(8)
@@ -528,6 +528,7 @@ class Settings(FluentWindow):
         btn_reload.setIcon(fIcon.SYNC)
 
         btn_enable = self.findChild(PushButton, 'enable_groups')
+        btn_enable.setIcon(fIcon.EDIT)
         btn_enable.clicked.connect(lambda: self.setup_group_enabled())
 
     def setup_group_edit(self):  # 设置 分组编辑 页面
@@ -966,3 +967,6 @@ def main():
     w = Settings()
     w.show()
     sys.exit(app.exec())
+
+if __name__ == '__main__':
+    main()

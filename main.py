@@ -427,7 +427,8 @@ def stop():
     sys.exit()
 
 
-if __name__ == "__main__":
+@logger.catch
+def main():
     os.environ['QT_SCALE_FACTOR'] = str(float(conf.get_ini('General', 'scale')))
     app = QApplication(sys.argv)
     translator = FluentTranslator(QLocale(QLocale.Language.Chinese, QLocale.Country.China))
@@ -462,3 +463,6 @@ if __name__ == "__main__":
     app.setQuitOnLastWindowClosed(False)
 
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
