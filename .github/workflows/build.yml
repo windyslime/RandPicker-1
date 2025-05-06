@@ -39,6 +39,7 @@ jobs:
           include-data-files: |
             LICENSE=LICENSE
             default_config.json=default_config.json
+            default_students.json=default_students.json
           include-data-dir: |
             ui=ui
             img=img
