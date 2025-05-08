@@ -152,7 +152,7 @@ class Widget(QWidget):
             logger.debug('使用全局分组。')
             students = conf.stu.get_active_index()
         else:
-            groups = conf.ini.get('Group', 'group').split(', ')
+            groups = conf.ini.get('Group', 'groups').split(', ')
             logger.debug(f'使用分组 {groups}。')
             for group in groups:
                 students.extend(conf.group.get_stu_index(int(group)))
