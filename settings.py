@@ -817,7 +817,8 @@ class UpdateConfirmBox(MessageBoxBase):
         else:
             self.title = '确实要更新 RandPicker 更新助理？'
             self.content = '将更新 RandPicker 更新助理。\n' \
-                          'RandPicker 不会被关闭。'
+                          'RandPicker 不会被关闭，但会暂时停止响应。正常情况下，停止响应不会超过 40 秒。\n' \
+                          '如果停止响应的时间过长，请检查您的网络环境。'
             
         self.titleLabel = TitleLabel(self.title, self)
         self.contentLabel = BodyLabel(self.content, self)
