@@ -1,6 +1,7 @@
 import sys
 import os
 
+from PyQt6.QtWidgets import QApplication
 from packaging.version import Version
 import requests
 from loguru import logger
@@ -138,7 +139,7 @@ def update_app(parent=None,):
     origin = conf.ini.get('Update', 'app')
     if os.path.exists('Updater.exe'):
         os.system(f'start Updater.exe -l=false -origin={origin}')
-        sys.exit(0)
+        QApplication.quit()
     logger.error('未找到更新器。')
 
 def update_updater(parent=None):

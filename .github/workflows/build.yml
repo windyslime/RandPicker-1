@@ -47,14 +47,15 @@ jobs:
           disable-console: true
           windows-icon-from-ico: ./img/Logo.png
 
-      - name: Package
-        run: |
-          curl -o zip.exe -L http://www.stahlworks.com/dev/zip.exe
-          xcopy build\main.dist\* RandPicker\ /e/y
-          ./zip -r -q RandPicker.zip RandPicker
+      # - name: Package
+      #   run: |
+      #     curl -o zip.exe -L http://www.stahlworks.com/dev/zip.exe
+      #     xcopy build\main.dist\* RandPicker\ /e/y
+      #     ./zip -r -q RandPicker.zip RandPicker
 
       - name: Upload
-        uses: actions/upload-artifact@v4.4.2
+        uses: actions/upload-artifact@v4
         with:
           name: RandPicker
-          path: RandPicker.zip
+          path: build/main.dist/**
+          
