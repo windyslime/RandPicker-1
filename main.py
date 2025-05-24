@@ -226,10 +226,13 @@ class Widget(QWidget):
 
         name.setText(group['name'])
         id_.setText(students)
-        self.show_avatar()
+        if self.is_avatar:
+            self.show_avatar()
 
     def show_avatar(self, file_path='./img/stu/default.jpeg'):
         avatar = self.findChild(PixmapLabel, 'avatar')
+        if not avatar:
+            return
         avatar_size = int(conf.ini.get('UI', 'avatar_size'))
         if file_path is not None and os.path.exists(file_path):
             file_path = file_path
