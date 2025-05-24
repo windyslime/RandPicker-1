@@ -169,22 +169,60 @@ class UpdateUpdaterThread(QThread):
         self.error_msg = ""
 
     def run(self):
+        BACKUP_URLS = [
+            f"https://ghfast.top/{self.url}",
+            f"https://gh-proxy.com/{self.url}",
+            f"https://github.moeyy.xyz/{self.url}",
+        ]
         try:
             self.progressChanged.emit(10)
-            resp = requests.get(self.url, timeout=10, stream=True)
-            total = int(resp.headers.get("content-length", 0))
-            downloaded = 0
-            chunk_size = 8192
-            with open("Updater.exe", "wb") as f:
-                for chunk in resp.iter_content(chunk_size=chunk_size):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += len(chunk)
-                        if total > 0:
-                            percent = int(10 + 90 * downloaded / total)
-                            self.progressChanged.emit(percent)
-            self.progressChanged.emit(100)
-            self.finished.emit(True, "")
+            try:
+                resp = requests.get(self.url, timeout=10, stream=True)
+                total = int(resp.headers.get("content-length", 0))
+                downloaded = 0
+                chunk_size = 8192
+                with open("Updater.exe", "wb") as f:
+                    for chunk in resp.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            if total > 0:
+                                percent = int(10 + 90 * downloaded / total)
+                                self.progressChanged.emit(percent)
+                self.progressChanged.emit(100)
+                self.finished.emit(True, "")
+                return
+            except Exception as e:
+                logger.error(f"主下载源失败: {e}")
+                self.progressChanged.emit(15)
+                if not self.url.startswith("https://github.com"):
+                    self.error_msg = f"下载失败: {e}"
+                    self.finished.emit(False, self.error_msg)
+                    return
+                # 依次尝试备用源
+                for backup_url in BACKUP_URLS:
+                    try:
+                        resp = requests.get(backup_url, timeout=10, stream=True)
+                        total = int(resp.headers.get("content-length", 0))
+                        downloaded = 0
+                        chunk_size = 8192
+                        with open("Updater.exe", "wb") as f:
+                            for chunk in resp.iter_content(chunk_size=chunk_size):
+                                if chunk:
+                                    f.write(chunk)
+                                    downloaded += len(chunk)
+                                    if total > 0:
+                                        percent = int(10 + 90 * downloaded / total)
+                                        self.progressChanged.emit(percent)
+                        self.progressChanged.emit(100)
+                        self.finished.emit(True, "")
+                        return
+                    except Exception as e2:
+                        logger.error(f"备用下载源 {backup_url} 失败: {e2}")
+                        self.progressChanged.emit(15)
+                # 全部失败
+                self.error_msg = f"所有下载源均失败: {e}"
+                self.finished.emit(False, self.error_msg)
         except Exception as e:
             self.error_msg = str(e)
             self.finished.emit(False, self.error_msg)
