@@ -27,8 +27,6 @@ settings = None
 share = QSharedMemory('RandPicker')
 
 APP_VERSION = str(update.APP_VERSION)
-UPDATER_VERSION = str(update.UPDATER_VERSION)
-
 
 def open_settings():
     """
@@ -670,13 +668,13 @@ class Settings(FluentWindow):
         self.reload_group_edit()
     
     def setup_update_interface(self):  # 设置 更新 页面
-        global APP_VERSION, UPDATER_VERSION
+        global APP_VERSION
         caption_app = self.findChild(BodyLabel, 'caption_app')
         caption_app.setText(f"当前版本：{APP_VERSION}。没有获取到最新版本。")
 
-        if UPDATER_VERSION:
+        if update.UPDATER_VERSION:
             caption_updater = self.findChild(BodyLabel, 'caption_updater')
-            caption_updater.setText(f"当前版本：{UPDATER_VERSION}。没有获取到最新版本。")
+            caption_updater.setText(f"当前版本：{str(update.UPDATER_VERSION)}。没有获取到最新版本。")
 
         btn_check_app = self.findChild(PushButton, 'check_app')
         btn_check_app.clicked.connect(lambda: self.check_update_app())
@@ -701,12 +699,11 @@ class Settings(FluentWindow):
         combo_origin_updater.currentIndexChanged.connect(lambda index: conf.ini.write('Update', 'updater', str(index)))
 
     def check_update_app(self):
-        try:
-            updates = update.check_update_app(conf.ini.get('Update', 'app'))
-        except Exception as e:
+        updates = update.check_update_app(conf.ini.get('Update', 'app'))
+        if not updates:
             InfoBar.error(
                 title='检查更新失败',
-                content=f"检查更新失败：{str(e)}",
+                content=f"未获取到更新信息",
                 orient=Qt.Orientation.Horizontal,
                 isClosable=True,
                 position=InfoBarPosition.TOP,
@@ -737,12 +734,11 @@ class Settings(FluentWindow):
 
 
     def check_update_updater(self):
-        try:
-            updates = update.check_update_updater(conf.ini.get('Update', 'updater'))
-        except Exception as e:
+        updates = update.check_update_updater(conf.ini.get('Update', 'updater'))
+        if not updates:
             InfoBar.error(
                 title='检查更新失败',
-                content=f"检查更新失败：{str(e)}",
+                content=f"未获取到更新信息",
                 orient=Qt.Orientation.Horizontal,
                 isClosable=True,
                 position=InfoBarPosition.TOP,
@@ -763,7 +759,7 @@ class Settings(FluentWindow):
         caption_updater = self.findChild(BodyLabel, 'caption_updater')
         title_updater = self.findChild(TitleLabel, 'title_updater')
         btn_update_updater = self.findChild(PrimaryPushButton, 'update_updater')
-        caption_updater.setText(f"当前版本：{UPDATER_VERSION}。最新版本：{updates['version']}。")
+        caption_updater.setText(f"当前版本：{str(update.UPDATER_VERSION)}。最新版本：{updates['version']}。")
         if updates['is_latest']:
             title_updater.setText('已是最新版本。')
             btn_update_updater.setEnabled(False)
@@ -776,11 +772,86 @@ class Settings(FluentWindow):
         w.exec()
 
     def update_updater(self):
-        global UPDATER_VERSION
-        w = UpdateConfirmBox(self, app=False)
-        w.exec()
-        UPDATER_VERSION = str(update.UPDATER_VERSION)
-        self.check_update_updater()
+        layout = self.updateInterface.layout() or self.updateInterface.findChild(QVBoxLayout)
+        # 获取下载链接
+        updates = update.check_update_updater(conf.ini.get('Update', 'updater'))
+        url = updates['url'] if updates else None
+        if not url:
+            InfoBar.error(
+                title='更新失败',
+                content='未获取到更新器下载链接',
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=2000,
+                parent=self
+            )
+            return
+        
+        # 禁用所有按钮
+        for btn in self.updateInterface.findChildren(PushButton):
+            btn.setEnabled(False)
+        for btn in self.updateInterface.findChildren(PrimaryPushButton):
+            btn.setEnabled(False)
+
+        progressInfo = InfoBar.new(
+            title=f'正在下载更新助理 {updates["version"]}',
+            content='正在准备更新',
+            orient=Qt.Orientation.Horizontal,
+            isClosable=False,
+            icon=fIcon.UPDATE,
+            position=InfoBarPosition.TOP,
+            duration=-1,
+            parent=self
+        )
+        # 创建进度条
+        from qfluentwidgets import ProgressBar
+        progressBar = ProgressBar(self.updateInterface)
+        progressInfo.addWidget(progressBar)
+        progressBar.setRange(0, 100)
+        progressBar.setValue(0)
+        progressBar.show()
+        progressInfo.show()
+        # 启动线程
+        self._update_updater_thread = update.UpdateUpdaterThread(url, self)
+        self._update_updater_thread.progressChanged.connect(progressBar.setValue)
+        def update_content_label(val):
+            progressBar.setValue(val)
+            progressInfo.contentLabel.setText(f'已完成 {val}%')
+        self._update_updater_thread.progressChanged.connect(update_content_label)
+        def on_finish(success, msg):
+            # 恢复所有按钮
+            for btn in self.updateInterface.findChildren(PushButton):
+                btn.setEnabled(True)
+            for btn in self.updateInterface.findChildren(PrimaryPushButton):
+                btn.setEnabled(True)
+            progressInfo.close()
+            if success:
+                InfoBar.success(
+                    title='更新完成',
+                    content='更新器已下载完成',
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=2000,
+                    parent=self
+                )
+                # 重新获取版本
+                update.refresh_updater_version()
+            else:
+                InfoBar.error(
+                    title='更新失败',
+                    content=msg,
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=3000,
+                    parent=self
+                )
+            self.check_update_updater()
+            self.check_update_app()
+        self._update_updater_thread.finished.connect(on_finish)
+        self._update_updater_thread.start()
 
     @override
     def closeEvent(self, event):  # 重写 closeEvent

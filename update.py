@@ -1,6 +1,7 @@
 import sys
 import os
 
+from PyQt6.QtCore import QThread, pyqtSignal
 from PyQt6.QtWidgets import QApplication
 from packaging.version import Version
 import requests
@@ -56,9 +57,7 @@ def check_update_app(origin: int = 0) -> dict:
 
     except requests.RequestException as e:
         logger.error(f'检查更新时发生错误。{e}')
-        return {'version': str(APP_VERSION),
-                'url': '',
-                'is_latest': True}
+        return None
 
     if latest_version > APP_VERSION:
         is_latest = False
@@ -97,8 +96,7 @@ def check_update_updater(origin: int = 0) -> dict:
 
     except requests.RequestException as e:
         logger.error(f'检查更新时发生错误。{e}')
-        return {'version': str(UPDATER_VERSION),
-                'is_latest': True}
+        return None
 
     if latest_version > UPDATER_VERSION:
         is_latest = False
@@ -142,32 +140,10 @@ def update_app(parent=None,):
         QApplication.quit()
     logger.error('未找到更新器。')
 
-def update_updater(parent=None):
+def refresh_updater_version(parent=None):
     """
-    更新更新器。
+    更新更新器版本。
     """
-    logger.info('开始更新更新器。')
-    progressBar = ProgressBar()
-    progressBar.setParent(parent)
-    parent.viewLayout.addWidget(progressBar)
-    progressBar.setRange(0, 100)
-    progressBar.setValue(0)
-
-    URL = check_update_updater()['url']
-    if URL:
-        logger.info(f'更新器下载链接: {URL}')
-    else:
-        logger.warning('未找到更新器下载链接。')
-        return
-    progressBar.setValue(20)
-    
-    updater = requests.get(URL, timeout=5)
-    with open('Updater.exe', 'wb') as f:
-        f.write(updater.content)
-    progressBar.setValue(75)
-    logger.info('更新器下载完成。')
-
-    progressBar.setValue(100)
     global UPDATER_VERSION
     if sys.platform == 'win32':
     # 获取更新器的版本
@@ -180,6 +156,38 @@ def update_updater(parent=None):
             logger.error(f'获取更新器版本时发生错误: {e}')
             UPDATER_VERSION = Version('0.0.0')
     return
+
+class UpdateUpdaterThread(QThread):
+    progressChanged = pyqtSignal(int)
+    finished = pyqtSignal(bool, str)
+
+    def __init__(self, url, parent=None):
+        super().__init__(parent)
+        self.url = url
+        self.error_msg = ''
+
+    def run(self):
+        try:
+            self.progressChanged.emit(10)
+            resp = requests.get(self.url, timeout=10, stream=True)
+            total = int(resp.headers.get('content-length', 0))
+            downloaded = 0
+            chunk_size = 8192
+            with open('Updater.exe', 'wb') as f:
+                for chunk in resp.iter_content(chunk_size=chunk_size):
+                    if chunk:
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        if total > 0:
+                            percent = int(10 + 90 * downloaded / total)
+                            self.progressChanged.emit(percent)
+            self.progressChanged.emit(100)
+            self.finished.emit(True, '')
+        except Exception as e:
+            self.error_msg = str(e)
+            self.finished.emit(False, self.error_msg)
+
+
 
     
 '''if __name__ == '__main__':
