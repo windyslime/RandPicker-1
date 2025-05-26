@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "0 16 * * *"
   workflow_dispatch:
+  push:
+    tags:
+      - v*
 
 concurrency:
   group: build-${{ github.ref }}
