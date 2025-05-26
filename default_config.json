@@ -12,7 +12,8 @@
         "edge_hide": "true",
         "edge_distance": "20",
         "hidden_width": "20",
-        "avatar_size": "32"
+        "avatar_size": "32",
+        "elastic_animation": "false"
     },
     "Color": {
         "dark": "#29f1ff",

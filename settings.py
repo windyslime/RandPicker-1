@@ -141,7 +141,10 @@ class Settings(FluentWindow):
         self.addSubInterface(self.stuEditInterface, fIcon.EDIT, "学生编辑")
         self.addSubInterface(self.groupEditInterface, fIcon.PEOPLE, "小组编辑")
         self.addSubInterface(
-            self.historyInterface, fIcon.HISTORY, "历史记录", NavigationItemPosition.BOTTOM
+            self.historyInterface,
+            fIcon.HISTORY,
+            "历史记录",
+            NavigationItemPosition.BOTTOM,
         )
         self.navigationInterface.addSeparator(NavigationItemPosition.BOTTOM)
         if sys.platform == "win32":
@@ -1023,15 +1026,15 @@ class Settings(FluentWindow):
                 mode=history["mode"],
                 student=history["student"],
                 time=history["time"],
-                parent=self
+                parent=self,
             )
             layout.addWidget(card)
-        
+
         layout.addStretch()
 
-        '''if not historys:
+        """if not historys:
             tips_history_empty = self.findChild(CaptionLabel, "tips_history_empty")
-            tips_history_empty.show()'''
+            tips_history_empty.show()"""
 
     @override
     def closeEvent(self, event):  # 重写 closeEvent
@@ -1048,7 +1051,9 @@ class HistoryCard(CardWidget):
         self.parent = parent
 
         self.iconWidget = IconWidget(fIcon.ROBOT if mode == 0 else fIcon.PEOPLE, self)
-        self.titleLabel = BodyLabel(f"{self.student["name"]} {self.student["id"]}", self)
+        self.titleLabel = BodyLabel(
+            f"{self.student['name']} {self.student['id']}", self
+        )
         self.contentLabel = CaptionLabel(str(self.time), self)
 
         self.hBoxLayout = QHBoxLayout(self)
@@ -1068,6 +1073,7 @@ class HistoryCard(CardWidget):
         self.vBoxLayout.addWidget(self.contentLabel, 0, Qt.AlignmentFlag.AlignVCenter)
         self.vBoxLayout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         self.hBoxLayout.addLayout(self.vBoxLayout)
+
 
 class UpdateConfirmBox(MessageBoxBase):
     """

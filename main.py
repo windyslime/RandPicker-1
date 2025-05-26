@@ -183,6 +183,8 @@ class Widget(QWidget):
 
     @override
     def mouseMoveEvent(self, event: QMouseEvent):
+        if not self.m_Position:
+            return
         if event.buttons() == Qt.MouseButton.LeftButton:
             self.move(
                 event.globalPosition().toPoint() - self.m_Position
@@ -239,7 +241,7 @@ class Widget(QWidget):
                     break
             self.student["avatar"] = avatar_path
             self.show_avatar(avatar_path)
-        
+
         historys.append({"mode": 0, "student": self.student, "time": datetime.now()})
         update_history()  # 通知历史记录已更改
 
@@ -287,7 +289,7 @@ class Widget(QWidget):
         id_.setText(students)
         if self.is_avatar:
             self.show_avatar()
-        
+
         group["id"] = students
 
         historys.append({"mode": 1, "student": group, "time": datetime.now()})
