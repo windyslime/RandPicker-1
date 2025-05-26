@@ -6,6 +6,7 @@ import os
 import sys
 from math import floor
 from typing import override
+from datetime import datetime
 
 from PyQt6 import uic
 from PyQt6.QtCore import QUrl, pyqtSignal, QSharedMemory, Qt
@@ -64,12 +65,16 @@ from qfluentwidgets import (
     TitleLabel,
     InfoBar,
     InfoBarPosition,
+    IconWidget,
 )
 
 import conf
 import update
 
 settings = None
+# historys = [{"mode": 0, "student": {"name": "张三", "id": 1001}, "time": datetime.now()}]
+historys = []
+
 
 share = QSharedMemory("RandPicker")
 
@@ -100,6 +105,13 @@ def cleanup_settings():
     settings = None
 
 
+def update_history():
+    global settings
+    if not settings:
+        return
+    settings.setup_history_interface()
+
+
 class Settings(FluentWindow):
     """
     设置类。这个类没有参数。
@@ -119,6 +131,8 @@ class Settings(FluentWindow):
         self.groupEditInterface = uic.loadUi("./ui/settings/group.ui")
         self.groupEditInterface.setObjectName("groupEditInterface")
         self.updateInterface = uic.loadUi("./ui/settings/update.ui")
+        self.historyInterface = uic.loadUi("./ui/settings/history.ui")
+        self.historyInterface.setObjectName("historyInterface")
 
         self.init_nav()
         self.setup_ui()
@@ -126,6 +140,9 @@ class Settings(FluentWindow):
     def init_nav(self):  # 设置侧边栏
         self.addSubInterface(self.stuEditInterface, fIcon.EDIT, "学生编辑")
         self.addSubInterface(self.groupEditInterface, fIcon.PEOPLE, "小组编辑")
+        self.addSubInterface(
+            self.historyInterface, fIcon.HISTORY, "历史记录", NavigationItemPosition.BOTTOM
+        )
         self.navigationInterface.addSeparator(NavigationItemPosition.BOTTOM)
         if sys.platform == "win32":
             self.addSubInterface(
@@ -167,6 +184,7 @@ class Settings(FluentWindow):
         self.setup_ui_interface()
         self.setup_group_edit_interface()
         self.setup_update_interface()
+        self.setup_history_interface()
 
     def setup_about_interface(self):  # 设置 关于 页面
         btn_github = self.findChild(PushButton, "btn_github")
@@ -984,11 +1002,72 @@ class Settings(FluentWindow):
         self._update_updater_thread.finished.connect(on_finish)
         self._update_updater_thread.start()
 
+    def setup_history_interface(self):
+        global historys
+        scroll_area = self.findChild(SmoothScrollArea, "ht_scroll")
+        QScroller.grabGesture(
+            scroll_area.viewport(), QScroller.ScrollerGestureType.LeftMouseButtonGesture
+        )
+        layout = self.findChild(QVBoxLayout, "history_card_layout")
+        # 清空现有布局
+        item_list = list(range(layout.count()))
+        item_list.reverse()
+        for i in item_list:
+            item = layout.itemAt(i)
+            layout.removeItem(item)
+            if item.widget():
+                item.widget().deleteLater()
+
+        for history in historys:
+            card = HistoryCard(
+                mode=history["mode"],
+                student=history["student"],
+                time=history["time"],
+                parent=self
+            )
+            layout.addWidget(card)
+        
+        layout.addStretch()
+
+        '''if not historys:
+            tips_history_empty = self.findChild(CaptionLabel, "tips_history_empty")
+            tips_history_empty.show()'''
+
     @override
     def closeEvent(self, event):  # 重写 closeEvent
         self.closed.emit()
         event.accept()
 
+
+class HistoryCard(CardWidget):
+    def __init__(self, mode: int, student: dict, time: datetime, parent=None):
+        super().__init__(parent=parent)
+        self.mode = mode
+        self.student = student
+        self.time = time
+        self.parent = parent
+
+        self.iconWidget = IconWidget(fIcon.ROBOT if mode == 0 else fIcon.PEOPLE, self)
+        self.titleLabel = BodyLabel(f"{self.student["name"]} {self.student["id"]}", self)
+        self.contentLabel = CaptionLabel(str(self.time), self)
+
+        self.hBoxLayout = QHBoxLayout(self)
+        self.vBoxLayout = QVBoxLayout()
+
+        self.setFixedHeight(73)
+        self.iconWidget.setFixedSize(32, 32)
+        self.contentLabel.setTextColor("#606060", "#d2d2d2")
+
+        self.hBoxLayout.setContentsMargins(20, 11, 11, 11)
+        self.hBoxLayout.setSpacing(15)
+        self.hBoxLayout.addWidget(self.iconWidget)
+
+        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
+        self.vBoxLayout.setSpacing(0)
+        self.vBoxLayout.addWidget(self.titleLabel, 0, Qt.AlignmentFlag.AlignVCenter)
+        self.vBoxLayout.addWidget(self.contentLabel, 0, Qt.AlignmentFlag.AlignVCenter)
+        self.vBoxLayout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+        self.hBoxLayout.addLayout(self.vBoxLayout)
 
 class UpdateConfirmBox(MessageBoxBase):
     """
