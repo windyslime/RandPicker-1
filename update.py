@@ -15,7 +15,7 @@ if sys.platform == "win32":
 
 REPO = "xuanxuan1231/RandPicker"
 UPDATER_REPO = "xuanxuan1231/RandPicker-Updater"
-APP_VERSION = Version("v1.5.1")
+APP_VERSION = Version("v1.6.0")
 
 if sys.platform == "win32":
     # 获取更新器的版本
