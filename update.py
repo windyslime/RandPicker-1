@@ -30,6 +30,17 @@ if sys.platform == "win32":
         logger.error(f"获取更新器版本时发生错误: {e}")
         UPDATER_VERSION = Version("0.0.0")
 
+    # 获取应用程序的版本
+    try:
+        info = win32api.GetFileVersionInfo("./RandPicker.exe", "\\")
+        ms = info["FileVersionMS"]
+        ls = info["FileVersionLS"]
+        APP_VERSION = Version(
+            f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
+        )
+    except Exception as e:
+        logger.error(f"获取应用程序版本时发生错误: {e}")
+
 
 def check_update_app(origin: int = 0) -> dict:
     """
@@ -143,7 +154,7 @@ def refresh_updater_version(parent=None):
     """
     更新更新器版本。
     """
-    global UPDATER_VERSION
+    global UPDATER_VERSION, APP_VERSION
     if sys.platform == "win32":
         # 获取更新器的版本
         try:
@@ -156,6 +167,17 @@ def refresh_updater_version(parent=None):
         except Exception as e:
             logger.error(f"获取更新器版本时发生错误: {e}")
             UPDATER_VERSION = Version("0.0.0")
+
+        # 获取应用程序的版本
+        try:
+            info = win32api.GetFileVersionInfo("./RandPicker.exe", "\\")
+            ms = info["FileVersionMS"]
+            ls = info["FileVersionLS"]
+            APP_VERSION = Version(
+                f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
+            )
+        except Exception as e:
+            logger.error(f"获取应用程序版本时发生错误: {e}")
     return
 
 
@@ -226,7 +248,3 @@ class UpdateUpdaterThread(QThread):
         except Exception as e:
             self.error_msg = str(e)
             self.finished.emit(False, self.error_msg)
-
-
-"""if __name__ == '__main__':
-    print(check_for_update('github'))"""
