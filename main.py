@@ -460,28 +460,6 @@ class Widget(QWidget):
         super().closeEvent(e)
 
 
-class SystemTrayIcon(QSystemTrayIcon):
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self.setIcon(parent.windowIcon())
-        self.menu = SystemTrayMenu(title="RandPicker", parent=parent)
-        self.menu.addActions(
-            [
-                Action(fIcon.SETTING, "设置", triggered=lambda: open_settings()),
-            ]
-        )
-        self.menu.addSeparator()
-        self.menu.addActions(
-            [
-                Action(
-                    fIcon.SYNC, "重新启动", triggered=lambda: restart()
-                ),  # 添加重启选项
-                Action(fIcon.CLOSE, "关闭", triggered=lambda: stop()),
-            ]
-        )
-        self.setContextMenu(self.menu)
-
-
 def reload_widget():
     global widget
     if widget is None:
@@ -508,6 +486,28 @@ def stop():
     if widget.isVisible():
         widget.close()
     sys.exit()
+
+
+class SystemTrayIcon(QSystemTrayIcon):
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+        self.setIcon(parent.windowIcon())
+        self.menu = SystemTrayMenu(title="RandPicker", parent=parent)
+        self.menu.addActions(
+            [
+                Action(fIcon.SETTING, "设置", triggered=lambda: open_settings()),
+            ]
+        )
+        self.menu.addSeparator()
+        self.menu.addActions(
+            [
+                Action("重载", triggered=lambda: reload_widget()),
+                Action(fIcon.SYNC, "重新启动", triggered=lambda: restart()),
+            ]
+        )
+        self.menu.addSeparator()
+        self.menu.addAction(Action(fIcon.CLOSE, "关闭", triggered=lambda: stop()))
+        self.setContextMenu(self.menu)
 
 
 if __name__ == "__main__":
