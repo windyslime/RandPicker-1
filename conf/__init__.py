@@ -1,10 +1,10 @@
 import json
 
-from configparser import ConfigParser
+from typing import Optional
 
 from . import ini, group, stu, imp
 
-def write_conf(students: dict | None, groups: dict | None):
+def write_conf(students: Optional[list] = None, groups: Optional[list] = None):
     """
     写入学生信息。
 
@@ -15,12 +15,12 @@ def write_conf(students: dict | None, groups: dict | None):
         old_data = json.load(f)
     new_data = {}
 
-    if students is None:
+    if not students:
         new_data['students'] = old_data['students']
     else:
         new_data['students'] = students
 
-    if groups is None:
+    if not groups:
         new_data['groups'] = old_data['groups']
     else:
         new_data['groups'] = groups
