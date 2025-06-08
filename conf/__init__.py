@@ -2,7 +2,10 @@ import json
 
 from typing import Optional
 
-from . import ini, group, stu, imp
+from . import ini, group, stu, imp, history
+
+__all__ = ["ini", "stu", "group", "imp", "history"]
+
 
 def write_conf(students: Optional[list] = None, groups: Optional[list] = None):
     """
@@ -11,22 +14,22 @@ def write_conf(students: Optional[list] = None, groups: Optional[list] = None):
     :param students: 要写入的全部学生信息 (如有)
     :param groups: 要写入的全部小组信息 (如有)
     """
-    with open('./students.json', 'r', encoding='utf-8') as f:
+    with open("./students.json", "r", encoding="utf-8") as f:
         old_data = json.load(f)
     new_data = {}
 
     if not students:
-        new_data['students'] = old_data['students']
+        new_data["students"] = old_data["students"]
     else:
-        new_data['students'] = students
+        new_data["students"] = students
 
     if not groups:
-        new_data['groups'] = old_data['groups']
+        new_data["groups"] = old_data["groups"]
     else:
-        new_data['groups'] = groups
+        new_data["groups"] = groups
 
     data = json.dumps(new_data, ensure_ascii=False, indent=4)
-    with open('./students.json', 'w', encoding='utf-8') as f:
+    with open("./students.json", "w", encoding="utf-8") as f:
         f.write(data)
 
 

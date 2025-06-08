@@ -48,7 +48,7 @@ from qfluentwidgets import (
 )
 
 import conf
-from settings import open_settings, share, restart, historys, update_history
+from settings import open_settings, share, restart, update_history
 
 # 适配高DPI缩放
 QApplication.setHighDpiScaleFactorRoundingPolicy(
@@ -242,7 +242,13 @@ class Widget(QWidget):
             self.student["avatar"] = avatar_path
             self.show_avatar(avatar_path)
 
-        historys.append({"mode": 0, "student": self.student, "time": datetime.now()})
+        conf.history.add_history(
+            {
+                "mode": 0,
+                "student": self.student,
+                "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
         update_history()  # 通知历史记录已更改
 
     def clear(self):
@@ -292,7 +298,13 @@ class Widget(QWidget):
 
         group["id"] = students
 
-        historys.append({"mode": 1, "student": group, "time": datetime.now()})
+        conf.history.add_history(
+            {
+                "mode": 1,
+                "student": group,
+                "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
         update_history()  # 通知历史记录已更改
 
     def show_avatar(self, file_path="./img/stu/default.jpeg"):

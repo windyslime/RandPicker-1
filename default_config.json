@@ -22,5 +22,8 @@
     "Update": {
         "app": "0",
         "updater": "0"
+    },
+    "History": {
+        "record": "true"
     }
 }

@@ -70,10 +70,10 @@ from qfluentwidgets import (
 
 import conf
 import update
+from conf.history import historys
 
 settings = None
 # historys = [{"mode": 0, "student": {"name": "张三", "id": 1001}, "time": datetime.now()}]
-historys = []
 
 
 share = QSharedMemory("RandPicker")
@@ -86,7 +86,7 @@ def open_settings():
     启动设置。
     """
     global settings
-    if settings is None or not settings.isVisible():
+    if not settings or not settings.isVisible():
         settings = Settings()
         settings.closed.connect(cleanup_settings)
         settings.show()
@@ -713,8 +713,6 @@ class Settings(FluentWindow):
             layout.addWidget(card, floor(i / 3) + 1, i % 3, 1, 1)
 
         layout.addWidget(global_card, 0, 0, 1, layout.columnCount())
-        tips_group_empty = self.findChild(CaptionLabel, "tips_group_empty")
-        tips_group_empty.close()
 
     def reload_group_edit(self):  # 重载 分组编辑 页面
         layout = self.findChild(QGridLayout, "group_card_layout")
@@ -1011,6 +1009,9 @@ class Settings(FluentWindow):
         QScroller.grabGesture(
             scroll_area.viewport(), QScroller.ScrollerGestureType.LeftMouseButtonGesture
         )
+        btn_record = self.findChild(SwitchButton, "btn_record_history")
+        btn_record.setChecked(conf.ini.get("History", "record") == "true")
+
         layout = self.findChild(QVBoxLayout, "history_card_layout")
         # 清空现有布局
         item_list = list(range(layout.count()))
@@ -1154,7 +1155,7 @@ class GroupCard(CardWidget):  # 分组卡片
         is_global: bool = True,
     ):
         super().__init__(parent)
-        if students is None:
+        if not students:
             students = ["未知学生"]
         self.exist_students = students
         self.title = title
@@ -1299,7 +1300,7 @@ class GroupEditBox(MessageBoxBase):
         self.stuList.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         for student in students:
             checkbox = CheckBox(text=student)  # 创建复选框
-            if exist_students is None:
+            if not exist_students:
                 checkbox.setChecked(False)
             elif student in exist_students:
                 checkbox.setChecked(True)
@@ -1335,20 +1336,27 @@ class GroupEditBox(MessageBoxBase):
                 if item.isChecked():
                     stu.append(item.text())
 
-            if isinstance(self.target, GroupCard):
+            if isinstance(self.target, GroupCard):  # target是卡片 修改信息
                 self.target.titleLabel.setText(name)
                 self.target.stuList.clear()
                 self.target.stuList.addItems(stu)
 
                 logger.success(f"修改了分组 {self.name} -> {name} 的信息。")
-            elif isinstance(self.target, QGridLayout):
+            elif isinstance(self.target, QGridLayout):  # target是布局 新建小组
                 card = GroupCard(
                     title=name, students=stu, is_global=False, parent=self.parent
                 )
-                row = self.target.rowCount() - 1
-                students = conf.stu.get_all_name()
-                global_card = GroupCard(students=students)
-                for column in range(1, 3):
+                if self.target.itemAtPosition(self.target.rowCount() - 1, 2):
+                    # 如果最后一行卡片满了 就再新建一行
+                    row = self.target.rowCount()
+                elif self.target.rowCount() == 1:
+                    # 如果只有一行 还是新建一行
+                    row = self.target.rowCount()
+                else:
+                    row = self.target.rowCount() - 1
+                global_card = self.target.itemAtPosition(0, 0).widget()
+                self.target.removeWidget(global_card)
+                for column in range(0, 3):  # 在第 1(-1) 到 3(-1) 列
                     if not self.target.itemAtPosition(row, column):
                         self.target.addWidget(card, row, column, 1, 1)
                         self.target.addWidget(
@@ -1356,8 +1364,9 @@ class GroupEditBox(MessageBoxBase):
                         )
                         logger.success(f"添加了新分组 {name}。")
                         return
-                self.target.addWidget(card, row + 1, 0, 1, 1)
+                self.target.addWidget(card, row, 0, 1, 1)
                 self.target.addWidget(global_card, 0, 0, 1, self.target.columnCount())
+
                 logger.success(f"添加了新分组 {name}。")
             else:
                 return
@@ -1397,13 +1406,13 @@ class GroupEnablePolicyBox(MessageBoxBase):
         self.groupList = ListWidget()
         self.groupList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
-        enabled_group = conf.ini.get("Group", "group").split(", ")
+        enabled_group = conf.ini.get("Group", "groups").split(", ")
 
         for group_num in range(len(conf.group.get_all())):
             group = conf.group.get_single(group_num)
 
             checkbox = CheckBox(text=group["name"])  # 创建复选框
-            if enabled_group is None:
+            if not enabled_group:
                 checkbox.setChecked(False)
             elif str(group_num) in enabled_group:
                 checkbox.setChecked(True)
@@ -1426,7 +1435,7 @@ class GroupEnablePolicyBox(MessageBoxBase):
         enable_group = []
         for group in range(count):
             item = self.groupList.item(group)
-            if item is None:
+            if not item:
                 continue
             widget = self.groupList.itemWidget(item)
             if not isinstance(widget, CheckBox):
@@ -1439,7 +1448,7 @@ class GroupEnablePolicyBox(MessageBoxBase):
             "global",
             str(self.btn_global.isChecked()),
             "Group",
-            "group",
+            "groups",
             str(enable_group).replace("[", "").replace("]", ""),
         )
 

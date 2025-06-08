@@ -231,7 +231,11 @@ cython_debug/
 
 *.csv
 students.json
+history.json
 
 # Visual Studio Code
 #  Visual Studio Code's configuration file.
 .vscode
+
+# Qt Designer
+*ui.py
