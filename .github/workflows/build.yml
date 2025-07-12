@@ -1,12 +1,7 @@
 name: 构建
 
 on:
-  schedule:
-    - cron: "0 16 * * *"
   workflow_dispatch:
-  push:
-    tags:
-      - v*
 
 concurrency:
   group: build-${{ github.ref }}
@@ -30,39 +25,22 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install imageio
-        
-      - name: Set version
-        id: set_version
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            tag_name="${GITHUB_REF#refs/tags/}"
-            echo "version=${tag_name:1}" >> $GITHUB_ENV
-          else
-            echo "version=0.0.1" >> $GITHUB_ENV
-          fi
+          pip install pyinstaller
 
       - name: Build
-        uses: Nuitka/Nuitka-Action@main
-        with:
-          mode: standalone
-          script-name: main.py
-          output-file: RandPicker
-          enable-plugins: pyqt6
-          include-data-files: |
-            LICENSE=LICENSE
-            default_config.json=default_config.json
-            default_students.json=default_students.json
-          include-data-dir: |
-            ui=ui
-            img=img
-          include-module: conf
-          disable-console: true
-          windows-icon-from-ico: ./img/Logo.png
-          file-version: ${{ env.version }}
-          product-version: ${{ env.version }}
-          product-name: RandPicker
+        shell: pwsh
+        run: |
+          pyinstaller main.py ^
+            --noconfirm --onedir ^
+            --name RandPicker ^
+            --content-directory . ^
+            --add-data LICENSE:. ^
+            --add-data conf:conf ^
+            --add-data ui:ui ^
+            --add-data img:img ^
+            --add-data default_config.json:. ^
+            --add-data default_students.json:. 
+
 
       # - name: Package
       #   run: |
@@ -74,5 +52,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: RandPicker
-          path: build/main.dist/**
-          
+          path: dist/**
