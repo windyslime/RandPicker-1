@@ -26,6 +26,8 @@ from PyQt6.QtWidgets import (
     QScroller,
     QButtonGroup,
     QLayoutItem,
+    QTabWidget,
+    QStackedWidget,
 )
 from loguru import logger
 from qfluentwidgets import (
@@ -66,6 +68,7 @@ from qfluentwidgets import (
     InfoBar,
     InfoBarPosition,
     IconWidget,
+    Pivot,
 )
 
 import conf
@@ -205,7 +208,8 @@ class Settings(FluentWindow):
         )
         if sys.platform != "win32":
             caption_update = self.findChild(BodyLabel, "caption_update")
-            caption_update.setText("您的系统不支持应用内更新。")
+            if caption_update:
+                caption_update.setText("您的系统不支持应用内更新。")
 
     def setup_student_edit_interface(self):  # 设置 学生编辑 页面
         table = self.findChild(TableWidget, "student_list")
@@ -803,39 +807,47 @@ class Settings(FluentWindow):
     def setup_update_interface(self):  # 设置 更新 页面
         global APP_VERSION
         caption_app = self.findChild(BodyLabel, "caption_app")
-        caption_app.setText(f"当前版本：{APP_VERSION}。没有获取到最新版本。")
+        if caption_app:
+            caption_app.setText(f"当前版本：{APP_VERSION}。没有获取到最新版本。")
 
-        if update.UPDATER_VERSION:
+        if update.UPDATER_VERSION is not None:
             caption_updater = self.findChild(BodyLabel, "caption_updater")
-            caption_updater.setText(
-                f"当前版本：{str(update.UPDATER_VERSION)}。没有获取到最新版本。"
-            )
+            if caption_updater:
+                caption_updater.setText(
+                    f"当前版本：{str(update.UPDATER_VERSION)}。没有获取到最新版本。"
+                )
 
         btn_check_app = self.findChild(PushButton, "check_app")
-        btn_check_app.clicked.connect(lambda: self.check_update_app())
+        if btn_check_app:
+            btn_check_app.clicked.connect(lambda: self.check_update_app())
         btn_check_updater = self.findChild(PushButton, "check_updater")
-        btn_check_updater.clicked.connect(lambda: self.check_update_updater())
+        if btn_check_updater:
+            btn_check_updater.clicked.connect(lambda: self.check_update_updater())
 
         btn_update_app = self.findChild(PrimaryPushButton, "update_app")
-        btn_update_app.setEnabled(False)
-        btn_update_app.clicked.connect(lambda: self.update_app())
+        if btn_update_app:
+            btn_update_app.setEnabled(False)
+            btn_update_app.clicked.connect(lambda: self.update_app())
         btn_update_updater = self.findChild(PrimaryPushButton, "update_updater")
-        btn_update_updater.setEnabled(False)
-        btn_update_updater.clicked.connect(lambda: self.update_updater())
+        if btn_update_updater:
+            btn_update_updater.setEnabled(False)
+            btn_update_updater.clicked.connect(lambda: self.update_updater())
 
         combo_origin_app = self.findChild(ComboBox, "app_origin")
-        combo_origin_app.addItems(["GitHub", "OSS (不可用)"])
-        combo_origin_app.setCurrentIndex(int(conf.ini.get("Update", "app")))
-        combo_origin_app.currentIndexChanged.connect(
-            lambda index: conf.ini.write("Update", "app", str(index))
-        )
+        if combo_origin_app:
+            combo_origin_app.addItems(["GitHub", "OSS (不可用)"])
+            combo_origin_app.setCurrentIndex(int(conf.ini.get("Update", "app")))
+            combo_origin_app.currentIndexChanged.connect(
+                lambda index: conf.ini.write("Update", "app", str(index))
+            )
 
         combo_origin_updater = self.findChild(ComboBox, "updater_origin")
-        combo_origin_updater.addItems(["GitHub", "OSS (不可用)"])
-        combo_origin_updater.setCurrentIndex(int(conf.ini.get("Update", "updater")))
-        combo_origin_updater.currentIndexChanged.connect(
-            lambda index: conf.ini.write("Update", "updater", str(index))
-        )
+        if combo_origin_updater:
+            combo_origin_updater.addItems(["GitHub", "OSS (不可用)"])
+            combo_origin_updater.setCurrentIndex(int(conf.ini.get("Update", "updater")))
+            combo_origin_updater.currentIndexChanged.connect(
+                lambda index: conf.ini.write("Update", "updater", str(index))
+            )
 
     def check_update_app(self):
         updates = update.check_update_app(conf.ini.get("Update", "app"))
@@ -865,15 +877,17 @@ class Settings(FluentWindow):
         caption_app = self.findChild(BodyLabel, "caption_app")
         title_app = self.findChild(TitleLabel, "title_app")
         btn_update_app = self.findChild(PrimaryPushButton, "update_app")
-        caption_app.setText(
-            f"当前版本：{APP_VERSION}。最新版本：{updates['version']}。"
-        )
-        if updates["is_latest"]:
-            title_app.setText("已是最新版本。")
-            btn_update_app.setEnabled(False)
-        else:
-            title_app.setText("有可用更新。")
-            btn_update_app.setEnabled(True)
+        if caption_app:
+            caption_app.setText(
+                f"当前版本：{APP_VERSION}。最新版本：{updates['version']}。"
+            )
+        if title_app:
+            if updates["is_latest"]:
+                title_app.setText("已是最新版本。")
+            else:
+                title_app.setText("有可用更新。")
+        if btn_update_app:
+            btn_update_app.setEnabled(not updates["is_latest"])
 
     def check_update_updater(self):
         updates = update.check_update_updater(conf.ini.get("Update", "updater"))
@@ -903,15 +917,17 @@ class Settings(FluentWindow):
         caption_updater = self.findChild(BodyLabel, "caption_updater")
         title_updater = self.findChild(TitleLabel, "title_updater")
         btn_update_updater = self.findChild(PrimaryPushButton, "update_updater")
-        caption_updater.setText(
-            f"当前版本：{str(update.UPDATER_VERSION)}。最新版本：{updates['version']}。"
-        )
-        if updates["is_latest"]:
-            title_updater.setText("已是最新版本。")
-            btn_update_updater.setEnabled(False)
-        else:
-            title_updater.setText("有可用更新。")
-            btn_update_updater.setEnabled(True)
+        if caption_updater:
+            caption_updater.setText(
+                f"当前版本：{str(update.UPDATER_VERSION)}。最新版本：{updates['version']}。"
+            )
+        if title_updater:
+            if updates["is_latest"]:
+                title_updater.setText("已是最新版本。")
+            else:
+                title_updater.setText("有可用更新。")
+        if btn_update_updater:
+            btn_update_updater.setEnabled(not updates["is_latest"])
 
     def update_app(self):
         w = UpdateConfirmBox(self, app=True)
@@ -1022,16 +1038,198 @@ class Settings(FluentWindow):
             if item.widget():
                 item.widget().deleteLater()
 
-        for history in historys:
+        # 添加导出功能按钮
+        export_card = CardWidget(self)
+        export_card.setMinimumHeight(100)
+        export_layout = QHBoxLayout(export_card)
+        
+        export_label = StrongBodyLabel("导出历史记录", export_card)
+        export_desc = CaptionLabel("将历史记录导出为Excel、CSV、JSON或PDF格式", export_card)
+        export_desc.setTextColor("#606060", "#d2d2d2")
+        
+        export_btn_layout = QVBoxLayout()
+        export_btn_layout.addWidget(export_label)
+        export_btn_layout.addWidget(export_desc)
+        
+        btn_export_excel = PushButton("导出Excel", export_card)
+        btn_export_csv = PushButton("导出CSV", export_card)
+        btn_export_json = PushButton("导出JSON", export_card)
+        btn_export_pdf = PushButton("导出PDF", export_card)
+        btn_export_all = PrimaryPushButton("全部导出", export_card)
+        
+        btn_export_excel.clicked.connect(lambda: self.export_history("excel"))
+        btn_export_csv.clicked.connect(lambda: self.export_history("csv"))
+        btn_export_json.clicked.connect(lambda: self.export_history("json"))
+        btn_export_pdf.clicked.connect(lambda: self.export_history("pdf"))
+        btn_export_all.clicked.connect(lambda: self.export_history("all"))
+        
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(btn_export_excel)
+        btn_layout.addWidget(btn_export_csv)
+        btn_layout.addWidget(btn_export_json)
+        btn_layout.addWidget(btn_export_pdf)
+        btn_layout.addWidget(btn_export_all)
+        
+        export_layout.addLayout(export_btn_layout)
+        export_layout.addLayout(btn_layout)
+        
+        layout.addWidget(export_card)
+
+        # 创建Pivot容器
+        pivot = Pivot(self)
+        stacked_widget = QStackedWidget(self)
+        
+        # 个人历史记录页面
+        personal_widget = QWidget()
+        personal_layout = QVBoxLayout(personal_widget)
+        personal_scroll = SmoothScrollArea()
+        personal_scroll.setWidgetResizable(True)
+        personal_scroll_widget = QWidget()
+        personal_scroll_layout = QVBoxLayout(personal_scroll_widget)
+        
+        # 小组历史记录页面
+        group_widget = QWidget()
+        group_layout = QVBoxLayout(group_widget)
+        group_scroll = SmoothScrollArea()
+        group_scroll.setWidgetResizable(True)
+        group_scroll_widget = QWidget()
+        group_scroll_layout = QVBoxLayout(group_scroll_widget)
+        
+        # 分离历史记录
+        personal_historys = [h for h in historys if h["mode"] == 0]
+        group_historys = [h for h in historys if h["mode"] == 1]
+        
+        # 添加个人历史记录卡片
+        for history in personal_historys:
             card = HistoryCard(
                 mode=history["mode"],
                 student=history["student"],
                 time=history["time"],
                 parent=self,
             )
-            layout.addWidget(card)
+            personal_scroll_layout.addWidget(card)
+        
+        # 添加小组历史记录卡片
+        for history in group_historys:
+            card = HistoryCard(
+                mode=history["mode"],
+                student=history["student"],
+                time=history["time"],
+                parent=self,
+            )
+            group_scroll_layout.addWidget(card)
+        
+        # 添加空状态提示
+        if not personal_historys:
+            empty_label = CaptionLabel("暂无个人选择记录", personal_scroll_widget)
+            empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            personal_scroll_layout.addWidget(empty_label)
+        
+        if not group_historys:
+            empty_label = CaptionLabel("暂无小组选择记录", group_scroll_widget)
+            empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            group_scroll_layout.addWidget(empty_label)
+        
+        personal_scroll_layout.addStretch()
+        group_scroll_layout.addStretch()
+        
+        personal_scroll.setWidget(personal_scroll_widget)
+        group_scroll.setWidget(group_scroll_widget)
+        
+        personal_layout.addWidget(personal_scroll)
+        group_layout.addWidget(group_scroll)
+        
+        # 添加子界面到堆栈
+        stacked_widget.addWidget(personal_widget)
+        stacked_widget.addWidget(group_widget)
+        
+        # 添加Pivot项
+        pivot.addItem(
+            routeKey="personal_history",
+            text="个人选择记录",
+            onClick=lambda: stacked_widget.setCurrentWidget(personal_widget)
+        )
+        pivot.addItem(
+            routeKey="group_history",
+            text="小组选择记录",
+            onClick=lambda: stacked_widget.setCurrentWidget(group_widget)
+        )
+        
+        # 连接信号并初始化
+        stacked_widget.currentChanged.connect(
+            lambda index: pivot.setCurrentItem(stacked_widget.widget(index).objectName())
+        )
+        
+        # 设置对象名称用于路由
+        personal_widget.setObjectName("personal_history")
+        group_widget.setObjectName("group_history")
+        
+        # 初始化显示个人记录
+        stacked_widget.setCurrentWidget(personal_widget)
+        pivot.setCurrentItem("personal_history")
+        
+        # 添加布局
+        content_layout = QVBoxLayout()
+        content_layout.addWidget(pivot, 0, Qt.AlignmentFlag.AlignHCenter)
+        content_layout.addWidget(stacked_widget)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        
+        container = QWidget()
+        container.setLayout(content_layout)
+        layout.addWidget(container)
 
-        layout.addStretch()
+    def export_history(self, format_type: str):
+        """导出历史记录"""
+        from conf.export import export_recent_results, export_by_date_range
+        
+        try:
+            if not historys:
+                InfoBar.warning(
+                    "警告",
+                    "没有可导出的历史记录",
+                    parent=self,
+                    duration=2000,
+                    position=InfoBarPosition.TOP,
+                )
+                return
+            
+            if format_type == "all":
+                results = export_recent_results(days=365, format_type="all")
+                success_count = len(results)
+                InfoBar.success(
+                    "导出成功",
+                    f"成功导出{success_count}种格式的文件到exports目录",
+                    parent=self,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                )
+            else:
+                filepath = export_recent_results(days=365, format_type=format_type)
+                filename = os.path.basename(filepath)
+                InfoBar.success(
+                    "导出成功",
+                    f"已导出: {filename}",
+                    parent=self,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                )
+                
+        except ImportError as e:
+            InfoBar.error(
+                "导出失败",
+                str(e),
+                parent=self,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+            )
+        except Exception as e:
+            InfoBar.error(
+                "导出失败",
+                f"导出时发生错误: {str(e)}",
+                parent=self,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+            )
 
         """if not historys:
             tips_history_empty = self.findChild(CaptionLabel, "tips_history_empty")

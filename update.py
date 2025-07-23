@@ -29,6 +29,9 @@ if sys.platform == "win32":
     except Exception as e:
         logger.error(f"获取更新器版本时发生错误: {e}")
         UPDATER_VERSION = Version("0.0.0")
+else:
+    # 非Windows系统，更新器不可用
+    UPDATER_VERSION = None
 
     # 获取应用程序的版本
     try:

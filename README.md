@@ -25,9 +25,22 @@
 - 从 Excel 和 CSV 文件导入
 - 自定义缩放
 - 历史记录
+- 抽选结果导出（支持Excel、CSV、JSON、PDF格式）
 
 ## 下一步
-- 可能在 v2.0.0 转向 RinUI
+- 增加更多的导入文件格式支持，如 JSON 和 TXT
+- 优化 UI 设计，提升用户体验
+- 用户账户系统
+
+## 导出功能使用说明
+在设置界面的"历史记录"页面中，您可以通过以下方式导出抽选结果：
+- **导出Excel**: 生成.xlsx格式的Excel文件，包含格式化的表格和样式
+- **导出CSV**: 生成.csv格式的逗号分隔文件，便于数据分析
+- **导出JSON**: 生成.json格式的结构化数据文件，包含完整的元数据
+- **导出PDF**: 生成.pdf格式的报告文件，适合打印和分享
+- **全部导出**: 一次性导出所有格式的文件
+
+所有导出的文件将保存在项目根目录下的`exports`文件夹中。
 
 ## 协议
 此项目 (RandPicker) 基于 GPL-3.0 许可证授权发布，详情请参阅 [LICENSE](LICENSE) 文件。
@@ -43,4 +56,3 @@ Copyright © 2025 Wenxuan Shen & Jerry Wu.
 
 ### 本项目受到以下项目的启发而开发
 - [Class-Widgets](https://github.com/Class-Widgets/Class-Widgets)
-- 隔壁班未开源的一个随机选人项目
