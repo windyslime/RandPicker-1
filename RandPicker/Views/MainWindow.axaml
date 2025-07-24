@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RandPicker.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="170" d:DesignHeight="175"
+        Width="170" Height="160"
+        x:Class="RandPicker.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="RandPicker"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        Topmost="True"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <StackPanel Orientation="Vertical" Spacing="13" Margin="20,13,20,13">
+        <Rectangle Width="55" Height="5" Fill="#503D3D3D" RadiusX="2.5" RadiusY="2.5"/>
+        
+        <StackPanel Orientation="Vertical" Spacing="2" >
+            <TextBlock Text="无结果" FontSize="28" FontWeight="Bold" FontFamily="Microsoft YaHei UI" />
+            <TextBlock Text="000000" FontSize="18" FontFamily="Microsoft YaHei UI" />
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" >
+            <Button Width="130" Height="35" HorizontalContentAlignment="Center" Command="{Binding PickPerson}">随机选人</Button>
+        </StackPanel>
+    </StackPanel>
+
+</Window>
