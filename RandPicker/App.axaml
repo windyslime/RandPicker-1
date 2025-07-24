@@ -3,7 +3,8 @@
              x:Class="RandPicker.App"
              xmlns:local="using:RandPicker"
              RequestedThemeVariant="Default"
-             xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles">
+             xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
@@ -14,7 +15,28 @@
         <FluentTheme />
     </ -->
     <Application.Styles>
-        <themes:MaterialTheme BaseTheme="Light" PrimaryColor="Purple" SecondaryColor="Lime" />
+        <themes:MaterialTheme PrimaryColor="Purple" SecondaryColor="Lime" />
     </Application.Styles>
+             
+             <TrayIcon.Icons>
+                 <TrayIcons>
+                     <TrayIcon Icon="/Assets/avalonia-logo.ico" 
+                               ToolTipText="RandPicker">
+                         <TrayIcon.Menu>
+                             <NativeMenu>
+                                 <NativeMenuItem Header="Settings">
+                                     <NativeMenu>
+                                         <NativeMenuItem Header="Option 1"   />
+                                         <NativeMenuItem Header="Option 2"   />
+                                         <NativeMenuItemSeparator />
+                                         <NativeMenuItem Header="Option 3"  />
+                                     </NativeMenu>
+                                 </NativeMenuItem>
+                                 <NativeMenuItem Header="退出" Command="{x:Static local:App.ExitCommand}"/>
+                             </NativeMenu>
+                         </TrayIcon.Menu>
+                     </TrayIcon>
+                 </TrayIcons>
+             </TrayIcon.Icons>
     
 </Application>

@@ -12,8 +12,8 @@
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="NoChrome"
         Topmost="True"
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent">
+        TransparencyLevelHint="Mica, Blur">
+        <!-- Background="Transparent" -->
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -25,8 +25,8 @@
         <Rectangle Width="55" Height="5" Fill="#503D3D3D" RadiusX="2.5" RadiusY="2.5"/>
         
         <StackPanel Orientation="Vertical" Spacing="2" >
-            <TextBlock Text="无结果" FontSize="28" FontWeight="Bold" FontFamily="Microsoft YaHei UI" />
-            <TextBlock Text="000000" FontSize="18" FontFamily="Microsoft YaHei UI" />
+            <TextBlock Text="{Binding ResultName}" FontSize="28" FontWeight="Bold" FontFamily="Microsoft YaHei UI" />
+            <TextBlock Text="{Binding ResultId}" FontSize="18" FontFamily="Microsoft YaHei UI" />
         </StackPanel>
         
         <StackPanel Orientation="Horizontal" >

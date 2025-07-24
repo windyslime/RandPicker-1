@@ -7,11 +7,15 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using RandPicker.ViewModels;
 using RandPicker.Views;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace RandPicker;
 
 public partial class App : Application
 {
+    public static ICommand ExitCommand { get; } = new RelayCommand(Exit);
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -46,5 +50,11 @@ public partial class App : Application
         }
     }
     
-    
+    private static void Exit()
+    {
+        if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.Shutdown();
+        }
+    }
 }
