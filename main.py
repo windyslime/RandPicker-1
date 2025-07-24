@@ -47,6 +47,9 @@ from qfluentwidgets import (
     SystemThemeListener,
 )
 
+# 导入加载管理器
+from loading import loading_manager
+
 import conf
 from settings import open_settings, share, restart, update_history
 
@@ -522,14 +525,158 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.setContextMenu(self.menu)
 
 
+def load_modules():
+    """按步骤加载各个模块，带错误处理"""
+    from PyQt6.QtCore import QTimer
+    
+    # 初始化加载界面
+    loading_manager.init_splash()
+    
+    steps = [
+        (1, "正在加载配置文件..."),
+        (2, "正在初始化主题..."),
+        (3, "正在加载学生数据..."),
+        (4, "正在加载历史记录..."),
+        (5, "正在初始化系统托盘..."),
+        (6, "正在加载UI组件..."),
+        (7, "正在应用主题样式..."),
+        (8, "正在完成启动...")
+    ]
+    
+    def load_step(index):
+        try:
+            if index < len(steps):
+                step_num, message = steps[index]
+                loading_manager.update_progress(step_num, message)
+                
+                # 根据步骤执行不同的加载操作
+                if index == 0:
+                    # 步骤1: 验证配置文件
+                    try:
+                        # 检查必要的配置项是否存在
+                        scale = float(conf.ini.get("General", "scale"))
+                        theme = conf.ini.get("General", "theme")
+                        if not theme or scale <= 0:
+                            raise ValueError("配置参数无效")
+                    except Exception as e:
+                        raise RuntimeError(f"配置文件加载失败: {str(e)}")
+                        
+                elif index == 1:
+                    # 步骤2: 主题初始化
+                    try:
+                        theme_value = conf.ini.get("General", "theme")
+                        if theme_value not in ["0", "1", "2"]:
+                            raise ValueError(f"主题配置无效: {theme_value}")
+                    except Exception as e:
+                        raise RuntimeError(f"主题初始化失败: {str(e)}")
+                        
+                elif index == 2:
+                    # 步骤3: 验证学生数据
+                    try:
+                        from conf import stu
+                        students = stu.get_all()
+                        if not students:
+                            raise ValueError("没有找到学生数据")
+                    except Exception as e:
+                        raise RuntimeError(f"学生数据加载失败: {str(e)}")
+                        
+                elif index == 3:
+                    # 步骤4: 历史记录
+                    try:
+                        update_history()
+                    except Exception as e:
+                        # 历史记录加载失败不是致命错误，继续启动
+                        logger.warning(f"历史记录加载失败: {str(e)}")
+                        
+                elif index == 4:
+                    # 步骤5: 系统托盘初始化
+                    pass
+                    
+                elif index == 5:
+                    # 步骤6: UI组件验证
+                    try:
+                        # 检查必要的UI文件是否存在
+                        ui_files = ["./ui/widget.ui", "./ui/widget-no-avatar.ui"]
+                        for ui_file in ui_files:
+                            if not os.path.exists(ui_file):
+                                raise FileNotFoundError(f"UI文件缺失: {ui_file}")
+                    except Exception as e:
+                        raise RuntimeError(f"UI组件验证失败: {str(e)}")
+                        
+                elif index == 6:
+                    # 步骤7: 主题样式应用
+                    try:
+                        from qfluentwidgets import isDarkTheme
+                        # 验证主题颜色配置
+                        if isDarkTheme():
+                            color = conf.ini.get("Color", "dark")
+                        else:
+                            color = conf.ini.get("Color", "light")
+                        if not color or not color.startswith("#"):
+                            raise ValueError(f"主题颜色配置无效: {color}")
+                    except Exception as e:
+                        raise RuntimeError(f"主题样式应用失败: {str(e)}")
+                        
+                elif index == 7:
+                    # 步骤8: 完成启动
+                    loading_manager.finish()
+                    init()
+                    return
+                    
+                # 设置下一步的定时器
+                QTimer.singleShot(300, lambda: load_step(index + 1))
+                
+        except Exception as e:
+            # 捕获所有异常并显示友好错误信息
+            error_type = type(e).__name__
+            error_msg = str(e)
+            
+            # 根据错误类型提供友好的提示
+            friendly_messages = {
+                "FileNotFoundError": "找不到必要的程序文件",
+                "PermissionError": "权限不足，无法访问文件",
+                "ValueError": "配置参数错误",
+                "RuntimeError": "程序运行错误",
+                "ImportError": "缺少必要的依赖模块",
+            }
+            
+            friendly_msg = friendly_messages.get(error_type, "程序启动失败")
+            
+            # 构建详细错误信息
+            details = f"错误类型: {error_type}\n详细信息: {error_msg}"
+            
+            logger.error(f"启动失败: {error_msg}")
+            loading_manager.show_error(friendly_msg, details)
+    
+    # 添加重试功能
+    def retry_loading():
+        """重试加载"""
+        logger.info("用户选择重试启动...")
+        load_step(0)
+    
+    # 将重试函数绑定到加载管理器
+    loading_manager.retry_loading = retry_loading
+    
+    # 开始加载流程
+    QTimer.singleShot(100, lambda: load_step(0))
+
+
 if __name__ == "__main__":
     os.environ["QT_SCALE_FACTOR"] = str(float(conf.ini.get("General", "scale")))
     app = QApplication(sys.argv)
+    
+    # 设置应用信息
+    app.setApplicationName("RandPicker")
+    app.setApplicationDisplayName("RandPicker")
+    app.setApplicationVersion("1.0.0")
+    
     translator = FluentTranslator(
         QLocale(QLocale.Language.Chinese, QLocale.Country.China)
     )
     app.installTranslator(translator)
+    
     logger.info(f"RandPicker 启动。缩放系数 {os.environ['QT_SCALE_FACTOR']}。")
+    
     if share.isAttached():
         logger.warning("有一个实例正在运行，或者上次没有正常退出。")
         logger.error("不欢迎。")
@@ -544,8 +691,10 @@ if __name__ == "__main__":
         msg_box.exec()
         logger.info("退出。")
         sys.exit(-1)
+    
     share.create(1)
     logger.info("欢迎。")
+    
     # 设置主题
     if conf.ini.get("General", "theme") == "0":
         setTheme(Theme.LIGHT)
@@ -553,8 +702,10 @@ if __name__ == "__main__":
         setTheme(Theme.DARK)
     else:
         setTheme(Theme.AUTO)
-    init()
-
+    
+    # 启动加载流程
+    load_modules()
+    
     app.setQuitOnLastWindowClosed(False)
-
+    
     sys.exit(app.exec())
