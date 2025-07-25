@@ -24,12 +24,12 @@
                                ToolTipText="RandPicker">
                          <TrayIcon.Menu>
                              <NativeMenu>
-                                 <NativeMenuItem Header="Settings">
+                                 <NativeMenuItem Header="设置">
                                      <NativeMenu>
-                                         <NativeMenuItem Header="Option 1"   />
-                                         <NativeMenuItem Header="Option 2"   />
+                                         <NativeMenuItem Header="学生设置"   />
+                                         <NativeMenuItem Header="小组设置"   />
                                          <NativeMenuItemSeparator />
-                                         <NativeMenuItem Header="Option 3"  />
+                                         <NativeMenuItem Header="界面设置" Command="{x:Static local:App.SettingsCommand}" />
                                      </NativeMenu>
                                  </NativeMenuItem>
                                  <NativeMenuItem Header="退出" Command="{x:Static local:App.ExitCommand}"/>

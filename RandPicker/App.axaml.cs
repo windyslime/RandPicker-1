@@ -15,6 +15,7 @@ namespace RandPicker;
 public partial class App : Application
 {
     public static ICommand ExitCommand { get; } = new RelayCommand(Exit);
+    public static ICommand SettingsCommand { get; } = new RelayCommand(Settings);
 
     public override void Initialize()
     {
@@ -56,5 +57,11 @@ public partial class App : Application
         {
             desktop.Shutdown();
         }
+    }
+
+    private static void Settings()
+    {
+        Settings settings = new Settings();
+        settings.Show();
     }
 }

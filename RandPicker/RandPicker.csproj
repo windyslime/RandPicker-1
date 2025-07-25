@@ -30,4 +30,11 @@
     <ItemGroup>
       <ProjectReference Include="..\RandPicker.Config\RandPicker.Config.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\Settings.axaml.cs">
+        <DependentUpon>Settings.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>
