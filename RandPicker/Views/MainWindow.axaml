@@ -13,7 +13,7 @@
         ExtendClientAreaChromeHints="NoChrome"
         Topmost="True"
         TransparencyLevelHint="Mica, Blur">
-        <!-- Background="Transparent" -->
+    <!-- Background="Transparent" -->
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -22,14 +22,14 @@
     </Design.DataContext>
 
     <StackPanel Orientation="Vertical" Spacing="13" Margin="20,13,20,13">
-        <Rectangle Width="55" Height="5" Fill="#503D3D3D" RadiusX="2.5" RadiusY="2.5"/>
-        
-        <StackPanel Orientation="Vertical" Spacing="2" >
+        <Rectangle Width="55" Height="5" Fill="#503D3D3D" RadiusX="2.5" RadiusY="2.5" />
+
+        <StackPanel Orientation="Vertical" Spacing="2">
             <TextBlock Text="{Binding ResultName}" FontSize="26" FontWeight="Bold" FontFamily="Microsoft YaHei UI" />
             <TextBlock Text="{Binding ResultId}" FontSize="16" FontFamily="Microsoft YaHei UI" />
         </StackPanel>
-        
-        <StackPanel Orientation="Horizontal" >
+
+        <StackPanel Orientation="Horizontal">
             <Button Width="130" Height="35" HorizontalContentAlignment="Center" Command="{Binding PickPerson}">随机选人</Button>
         </StackPanel>
     </StackPanel>

@@ -6,9 +6,9 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="RandPicker.Views.Settings"
         Title="Settings">
-        <StackPanel>
-                <controls:Card Margin="16">
-                        <TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!"/>
-                </controls:Card>
-        </StackPanel>
+    <StackPanel>
+        <controls:Card Margin="16">
+            <TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!" />
+        </controls:Card>
+    </StackPanel>
 </Window>

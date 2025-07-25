@@ -5,38 +5,38 @@
              RequestedThemeVariant="Default"
              xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
              xmlns:system="clr-namespace:System;assembly=System.Runtime">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
-  
+
     <!-- Application.Styles>
         <FluentTheme />
     </ -->
     <Application.Styles>
         <themes:MaterialTheme PrimaryColor="Purple" SecondaryColor="Lime" />
     </Application.Styles>
-             
-             <TrayIcon.Icons>
-                 <TrayIcons>
-                     <TrayIcon Icon="/Assets/avalonia-logo.ico" 
-                               ToolTipText="RandPicker">
-                         <TrayIcon.Menu>
-                             <NativeMenu>
-                                 <NativeMenuItem Header="设置">
-                                     <NativeMenu>
-                                         <NativeMenuItem Header="学生设置"   />
-                                         <NativeMenuItem Header="小组设置"   />
-                                         <NativeMenuItemSeparator />
-                                         <NativeMenuItem Header="界面设置" Command="{x:Static local:App.SettingsCommand}" />
-                                     </NativeMenu>
-                                 </NativeMenuItem>
-                                 <NativeMenuItem Header="退出" Command="{x:Static local:App.ExitCommand}"/>
-                             </NativeMenu>
-                         </TrayIcon.Menu>
-                     </TrayIcon>
-                 </TrayIcons>
-             </TrayIcon.Icons>
-    
+
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/avalonia-logo.ico"
+                      ToolTipText="RandPicker">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="设置">
+                            <NativeMenu>
+                                <NativeMenuItem Header="学生设置" />
+                                <NativeMenuItem Header="小组设置" />
+                                <NativeMenuItemSeparator />
+                                <NativeMenuItem Header="界面设置" Command="{x:Static local:App.SettingsCommand}" />
+                            </NativeMenu>
+                        </NativeMenuItem>
+                        <NativeMenuItem Header="退出" Command="{x:Static local:App.ExitCommand}" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
+
 </Application>

@@ -54,5 +54,4 @@ public partial class MainWindow : Window
         // 嘿刹不住车了嘿，现在人追着车跑嘿
         if (_isDragging) _isDragging = false;
     }
-
 }
