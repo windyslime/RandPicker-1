@@ -27,7 +27,7 @@ sealed class Program
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "应用程序启动失败");
+            Log.Fatal(ex, "出现致命错误。");
         }
         finally
         {

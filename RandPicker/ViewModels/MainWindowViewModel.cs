@@ -61,15 +61,16 @@ public class MainWindowViewModel : ViewModelBase
         {
             ResultName = "无结果";
             ResultId = "000000";
-
-            // 加权 随机
-            var weightedStudents = StudentService.GetWeightedList(activeStudents);
-            var selectedStudent = weightedStudents[_random.Next(weightedStudents.Count)];
-
-            ResultName = selectedStudent.Name;
-            ResultId = selectedStudent.Id.ToString();
-
-            Log.Information($"选中: {selectedStudent.Name} (ID: {selectedStudent.Id})");
+            return;
         }
+
+        // 加权 随机
+        var weightedStudents = StudentService.GetWeightedList(activeStudents);
+        var selectedStudent = weightedStudents[_random.Next(weightedStudents.Count)];
+
+        ResultName = selectedStudent.Name;
+        ResultId = selectedStudent.Id.ToString();
+
+        Log.Information($"选中: {selectedStudent.Name} (ID: {selectedStudent.Id})");
     }
 }
