@@ -2,10 +2,13 @@
   <img width="16%" align="center" src="img/Logo.png" alt="logo">
 </p>
   <h1 align="center">
-  RandPicker
+  RandPicker - 随机点名器
 </h1>
 <p align="center">
- 一个简单的随机选人程序
+ 基于WPF和Material Design的现代化随机点名器应用。
+</p>
+<p align="center">
+  <small>当前版本：WPF版（C#） | <a href="#pyqt-legacy">PyQt版已废弃</a></small>
 </p>
 <div align="center">
 
@@ -48,7 +51,13 @@
 Copyright © 2025 Wenxuan Shen & Jerry Wu.
 
 ## 致谢
-### 第三方库和框架
+### 技术栈（WPF版）
+- [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [Material Design in XAML](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit)
+- [CommunityToolkit.Mvvm](https://learn.microsoft.com/en-us/windows/communitytoolkit/mvvm/)
+- [EPPlus](https://github.com/JanKallman/EPPlus) (Excel处理)
+
+### 技术栈（PyQt版 - 已废弃）
 - [PyQt6](https://pypi.org/project/PyQt6)  
 - [PyQt6-Fluent-Widgets](https://pypi.org/project/PyQt6-Fluent-Widgets)  
 - [loguru](https://pypi.org/project/loguru)  

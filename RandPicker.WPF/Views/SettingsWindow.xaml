@@ -1,0 +1,207 @@
+<Window x:Class="RandPicker.WPF.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:viewmodels="clr-namespace:RandPicker.WPF.ViewModels"
+        mc:Ignorable="d"
+        Title="设置" 
+        Height="500" 
+        Width="600"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}">
+    
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题 -->
+        <TextBlock Text="应用设置" 
+                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                   Margin="0,0,0,16"/>
+
+        <!-- 设置内容 -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- 主题设置 -->
+                <materialDesign:Card Margin="0,0,0,16" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="主题设置" 
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0,0,0,16"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="主题模式:" 
+                                       VerticalAlignment="Center"/>
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding AvailableThemes}"
+                                      SelectedValue="{Binding Settings.Theme}"
+                                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                      Margin="0,8,0,8"/>
+
+                            <TextBlock Grid.Row="1" 
+                                       Text="主题颜色:" 
+                                       VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,8,0,8">
+                                <ItemsControl ItemsSource="{Binding AvailableColors}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Width="32" 
+                                                    Height="32" 
+                                                    Margin="4"
+                                                    Background="{Binding}"
+                                                    BorderBrush="{Binding}"
+                                                    Command="{Binding DataContext.ApplyThemeColorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignRaisedButton}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="2" 
+                                       Text="记录历史:" 
+                                       VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="2" Grid.Column="1"
+                                      IsChecked="{Binding Settings.RecordHistory}"
+                                      Content="启用历史记录"
+                                      Margin="0,8,0,8"/>
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- 界面设置 -->
+                <materialDesign:Card Margin="0,0,0,16" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="界面设置" 
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0,0,0,16"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="边缘隐藏:" 
+                                       VerticalAlignment="Center"/>
+                            <CheckBox Grid.Column="1"
+                                      IsChecked="{Binding Settings.EdgeHide}"
+                                      Content="启用边缘隐藏"
+                                      Margin="0,8,0,8"/>
+
+                            <TextBlock Grid.Row="1" 
+                                       Text="边缘距离:" 
+                                       VerticalAlignment="Center"/>
+                            <Slider Grid.Row="1" Grid.Column="1"
+                                    Value="{Binding Settings.EdgeDistance}"
+                                    Minimum="0"
+                                    Maximum="100"
+                                    Margin="0,8,0,8"/>
+
+                            <TextBlock Grid.Row="2" 
+                                       Text="隐藏宽度:" 
+                                       VerticalAlignment="Center"/>
+                            <Slider Grid.Row="2" Grid.Column="1"
+                                    Value="{Binding Settings.HiddenWidth}"
+                                    Minimum="0"
+                                    Maximum="100"
+                                    Margin="0,8,0,8"/>
+
+                            <TextBlock Grid.Row="3" 
+                                       Text="启用头像:" 
+                                       VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="3" Grid.Column="1"
+                                      IsChecked="{Binding Settings.AvatarEnabled}"
+                                      Content="显示学生头像"
+                                      Margin="0,8,0,8"/>
+
+                            <TextBlock Grid.Row="4" 
+                                       Text="头像大小:" 
+                                       VerticalAlignment="Center"/>
+                            <Slider Grid.Row="4" Grid.Column="1"
+                                    Value="{Binding Settings.AvatarSize}"
+                                    Minimum="16"
+                                    Maximum="128"
+                                    Margin="0,8,0,8"/>
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- 导出设置 -->
+                <materialDesign:Card Margin="0,0,0,16" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="导出设置" 
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0,0,0,16"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="导出路径:" 
+                                       VerticalAlignment="Center"/>
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding Settings.ExportPath}"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         Margin="0,8,8,8"/>
+                                <Button Grid.Column="1"
+                                        Command="{Binding SelectExportPathCommand}"
+                                        Style="{StaticResource MaterialDesignRaisedButton}"
+                                        Content="浏览..."/>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 底部按钮 -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,16,0,0">
+            <Button Content="重置" 
+                    Command="{Binding ResetSettingsCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0,0,8,0"/>
+            <Button Content="保存" 
+                    Command="{Binding SaveSettingsCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"/>
+        </StackPanel>
+    </Grid>
+</Window>
