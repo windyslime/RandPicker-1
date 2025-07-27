@@ -1,0 +1,176 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:RandPicker.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="RandPicker.Views.StudentManagementView"
+             x:DataType="vm:StudentManagementViewModel">
+
+    <Design.DataContext>
+        <vm:StudentManagementViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- 主内容区域 -->
+        <Grid Grid.Column="0" Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 工具栏 -->
+            <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16"
+                    BoxShadow="0 2 8 0 #1A000000">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 添加按钮 -->
+                    <Button Grid.Column="0" 
+                            Content="添加学生" 
+                            Background="#2196F3" 
+                            Foreground="White"
+                            CornerRadius="6"
+                            Padding="16,8"
+                            Command="{Binding AddCommand}" />
+
+                    <!-- 搜索框 -->
+                    <TextBox Grid.Column="1" 
+                             Watermark="搜索学生姓名或学号..."
+                             Text="{Binding SearchText}"
+                             Margin="16,0"
+                             VerticalAlignment="Center"
+                             Height="36" />
+
+                    <!-- 刷新按钮 -->
+                    <Button Grid.Column="2" 
+                            Content="刷新" 
+                            Background="#F5F5F5"
+                            CornerRadius="6"
+                            Padding="16,8"
+                            Command="{Binding RefreshCommand}" />
+                </Grid>
+            </Border>
+
+            <!-- 学生列表 -->
+            <Border Grid.Row="1" Background="White" CornerRadius="8" 
+                    BoxShadow="0 2 8 0 #1A000000">
+                <DataGrid ItemsSource="{Binding Students}"
+                          SelectedItem="{Binding SelectedStudent}"
+                          AutoGenerateColumns="False"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          CanUserReorderColumns="False"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="True"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          Margin="1">
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="学号" Binding="{Binding Id}" Width="100" />
+                        <DataGridTextColumn Header="姓名" Binding="{Binding Name}" Width="150" />
+                        <DataGridTextColumn Header="权重" Binding="{Binding Weight}" Width="80" />
+                        <DataGridCheckBoxColumn Header="激活" Binding="{Binding IsActive}" Width="80" />
+                        <DataGridTemplateColumn Header="操作" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Content="编辑" 
+                                                Background="#4CAF50" 
+                                                Foreground="White"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                FontSize="12"
+                                                Command="{Binding $parent[UserControl].((vm:StudentManagementViewModel)DataContext).EditCommand}" />
+                                        <Button Content="删除" 
+                                                Background="#F44336" 
+                                                Foreground="White"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                FontSize="12"
+                                                Command="{Binding $parent[UserControl].((vm:StudentManagementViewModel)DataContext).DeleteCommand}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+
+        <!-- 编辑面板 -->
+        <Border Grid.Column="1" 
+                Width="320" 
+                Background="White" 
+                BorderBrush="#E0E0E0" 
+                BorderThickness="1,0,0,0"
+                IsVisible="{Binding IsEditPanelVisible}">
+            
+            <ScrollViewer>
+                <StackPanel Margin="24" Spacing="16">
+                    <!-- 标题 -->
+                    <TextBlock Text="{Binding EditPanelTitle}" 
+                               FontSize="18" 
+                               FontWeight="Bold" 
+                               Foreground="#333333" />
+
+                    <!-- 学号 -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="学号" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding EditingStudent.Id}" 
+                                 IsReadOnly="{Binding !IsAddMode}" />
+                    </StackPanel>
+
+                    <!-- 姓名 -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="姓名" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding EditingStudent.Name}" 
+                                 Watermark="请输入学生姓名" />
+                    </StackPanel>
+
+                    <!-- 权重 -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="权重" FontWeight="SemiBold" />
+                        <NumericUpDown Value="{Binding EditingStudent.Weight}" 
+                                       Minimum="1" 
+                                       Maximum="10" 
+                                       Increment="1" />
+                        <TextBlock Text="权重越高，被选中的概率越大" 
+                                   FontSize="12" 
+                                   Foreground="#666666" />
+                    </StackPanel>
+
+                    <!-- 激活状态 -->
+                    <CheckBox Content="激活状态" 
+                              IsChecked="{Binding EditingStudent.IsActive}" 
+                              FontWeight="SemiBold" />
+
+                    <!-- 按钮组 -->
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,24,0,0">
+                        <Button Content="保存" 
+                                Background="#2196F3" 
+                                Foreground="White"
+                                CornerRadius="6"
+                                Padding="20,8"
+                                Command="{Binding SaveCommand}" />
+                        <Button Content="取消" 
+                                Background="#F5F5F5"
+                                CornerRadius="6"
+                                Padding="20,8"
+                                Command="{Binding CancelCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

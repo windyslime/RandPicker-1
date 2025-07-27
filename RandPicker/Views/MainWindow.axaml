@@ -1,10 +1,11 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:RandPicker.ViewModels"
+        xmlns:local="using:RandPicker"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="170" d:DesignHeight="155"
-        Width="170" Height="155"
+        mc:Ignorable="d" d:DesignWidth="170" d:DesignHeight="185"
+        Width="170" Height="185"
         x:Class="RandPicker.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -29,8 +30,13 @@
             <TextBlock Text="{Binding ResultId}" FontSize="16" FontFamily="Microsoft YaHei UI" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Spacing="8">
             <Button Width="130" Height="35" HorizontalContentAlignment="Center" Command="{Binding PickPerson}">随机选人</Button>
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Width="65" Height="25" HorizontalContentAlignment="Center" Command="{x:Static local:App.ManagementCommand}" FontSize="12">管理</Button>
+            <Button Width="65" Height="25" HorizontalContentAlignment="Center" Command="{x:Static local:App.SettingsCommand}" FontSize="12">设置</Button>
         </StackPanel>
     </StackPanel>
 

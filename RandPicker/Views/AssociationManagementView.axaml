@@ -1,0 +1,197 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:RandPicker.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="RandPicker.Views.AssociationManagementView"
+             x:DataType="vm:AssociationManagementViewModel">
+
+    <Design.DataContext>
+        <vm:AssociationManagementViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 工具栏 -->
+        <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16"
+                BoxShadow="0 2 8 0 #1A000000">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                           Text="学生小组关联管理" 
+                           FontSize="18" 
+                           FontWeight="Bold" 
+                           VerticalAlignment="Center" />
+
+                <Button Grid.Column="2" 
+                        Content="刷新数据" 
+                        Background="#2196F3" 
+                        Foreground="White"
+                        CornerRadius="6"
+                        Padding="16,8"
+                        Command="{Binding RefreshCommand}" />
+            </Grid>
+        </Border>
+
+        <!-- 主内容区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 未分组学生列表 -->
+            <Border Grid.Column="0" Background="White" CornerRadius="8" 
+                    BoxShadow="0 2 8 0 #1A000000" Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" 
+                               Text="未分组学生" 
+                               FontSize="16" 
+                               FontWeight="Bold" 
+                               Margin="0,0,0,12" />
+
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding UnassignedStudents}"
+                              SelectedItem="{Binding SelectedUnassignedStudent}"
+                              AutoGenerateColumns="False"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              CanUserReorderColumns="False"
+                              CanUserResizeColumns="True"
+                              IsReadOnly="True"
+                              SelectionMode="Single">
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="学号" Binding="{Binding Id}" Width="80" />
+                            <DataGridTextColumn Header="姓名" Binding="{Binding Name}" Width="120" />
+                            <DataGridCheckBoxColumn Header="激活" Binding="{Binding IsActive}" Width="60" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- 中间操作区域 -->
+            <StackPanel Grid.Column="1" 
+                        VerticalAlignment="Center" 
+                        Spacing="16" 
+                        Margin="24,0">
+                
+                <Button Content="添加到小组 →" 
+                        Background="#4CAF50" 
+                        Foreground="White"
+                        CornerRadius="6"
+                        Padding="16,12"
+                        Command="{Binding AddToGroupCommand}"
+                        IsEnabled="{Binding AddToGroupCommand.CanExecute}" />
+
+                <TextBlock Text="选择学生和小组后\n点击按钮进行关联" 
+                           TextAlignment="Center"
+                           FontSize="12" 
+                           Foreground="#666666" />
+            </StackPanel>
+
+            <!-- 小组和成员管理区域 -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- 小组列表 -->
+                <Border Grid.Row="0" Background="White" CornerRadius="8" 
+                        BoxShadow="0 2 8 0 #1A000000" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" 
+                                   Text="小组列表" 
+                                   FontSize="16" 
+                                   FontWeight="Bold" 
+                                   Margin="0,0,0,12" />
+
+                        <ListBox Grid.Row="1"
+                                 ItemsSource="{Binding Groups}"
+                                 SelectedItem="{Binding SelectedGroup}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding StudentIds.Count, StringFormat='({0}人)'}" 
+                                                   Foreground="#666666" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+
+                <!-- 选中小组的成员列表 -->
+                <Border Grid.Row="2" Background="White" CornerRadius="8" 
+                        BoxShadow="0 2 8 0 #1A000000" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" 
+                                   Text="{Binding SelectedGroup.Name, StringFormat='小组成员 - {0}'}" 
+                                   FontSize="16" 
+                                   FontWeight="Bold" 
+                                   Margin="0,0,0,12" />
+
+                        <DataGrid Grid.Row="1"
+                                  ItemsSource="{Binding SelectedGroupMembers}"
+                                  AutoGenerateColumns="False"
+                                  GridLinesVisibility="Horizontal"
+                                  HeadersVisibility="Column"
+                                  CanUserReorderColumns="False"
+                                  CanUserResizeColumns="True"
+                                  IsReadOnly="True"
+                                  SelectionMode="Single">
+                            
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="学号" Binding="{Binding Id}" Width="80" />
+                                <DataGridTextColumn Header="姓名" Binding="{Binding Name}" Width="100" />
+                                <DataGridTemplateColumn Header="操作" Width="80">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="移除" 
+                                                    Background="#F44336" 
+                                                    Foreground="White"
+                                                    CornerRadius="4"
+                                                    Padding="8,4"
+                                                    FontSize="12"
+                                                    Command="{Binding $parent[UserControl].((vm:AssociationManagementViewModel)DataContext).RemoveFromGroupCommand}"
+                                                    CommandParameter="{Binding}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

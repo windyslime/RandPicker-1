@@ -1,0 +1,121 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RandPicker.ViewModels"
+        xmlns:views="using:RandPicker.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        Width="1200" Height="800"
+        x:Class="RandPicker.Views.ManagementMainView"
+        x:DataType="vm:ManagementMainViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="学生小组管理系统"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:ManagementMainViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 顶部导航栏 -->
+        <Border Grid.Row="0" Background="#1976D2">
+            <Grid Margin="24,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                           Text="学生小组管理系统" 
+                           FontSize="20" 
+                           FontWeight="Bold" 
+                           Foreground="White"
+                           VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal" 
+                            Spacing="16"
+                            VerticalAlignment="Center">
+                    <Button Content="设置" 
+                            Background="Transparent" 
+                            Foreground="White"
+                            BorderThickness="1"
+                            BorderBrush="White"
+                            CornerRadius="4"
+                            Padding="12,6" />
+                    <Button Content="关闭" 
+                            Background="Transparent" 
+                            Foreground="White"
+                            BorderThickness="1"
+                            BorderBrush="White"
+                            CornerRadius="4"
+                            Padding="12,6"
+                            Click="CloseButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 主内容区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 侧边导航菜单 -->
+            <Border Grid.Column="0" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0">
+                <ListBox ItemsSource="{Binding MenuItems}"
+                         SelectedItem="{Binding SelectedMenuItem}"
+                         Background="Transparent"
+                         BorderThickness="0">
+                    
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Height" Value="48" />
+                            <Setter Property="Padding" Value="24,12" />
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                        <Style Selector="ListBoxItem:selected">
+                            <Setter Property="Background" Value="#2196F3" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Style>
+                        <Style Selector="ListBoxItem:pointerover">
+                            <Setter Property="Background" Value="#E3F2FD" />
+                        </Style>
+                    </ListBox.Styles>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" 
+                                       FontSize="14" 
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <!-- 主内容显示区域 -->
+            <Border Grid.Column="1" Background="#FAFAFA">
+                <ContentControl Content="{Binding CurrentViewModel}">
+                    <ContentControl.DataTemplates>
+                        <DataTemplate DataType="vm:StudentManagementViewModel">
+                            <views:StudentManagementView />
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:GroupManagementViewModel">
+                            <views:GroupManagementView />
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:AssociationManagementViewModel">
+                            <views:AssociationManagementView />
+                        </DataTemplate>
+                    </ContentControl.DataTemplates>
+                </ContentControl>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

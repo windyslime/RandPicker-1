@@ -1,0 +1,260 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:RandPicker.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="RandPicker.Views.GroupManagementView"
+             x:DataType="vm:GroupManagementViewModel">
+
+    <Design.DataContext>
+        <vm:GroupManagementViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- 主内容区域 -->
+        <Grid Grid.Column="0" Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="200" />
+            </Grid.RowDefinitions>
+
+            <!-- 工具栏 -->
+            <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16"
+                    BoxShadow="0 2 8 0 #1A000000">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 添加按钮 -->
+                    <Button Grid.Column="0" 
+                            Content="添加小组" 
+                            Background="#2196F3" 
+                            Foreground="White"
+                            CornerRadius="6"
+                            Padding="16,8"
+                            Command="{Binding AddCommand}" />
+
+                    <!-- 搜索框 -->
+                    <TextBox Grid.Column="1" 
+                             Watermark="搜索小组名称或描述..."
+                             Text="{Binding SearchText}"
+                             Margin="16,0"
+                             VerticalAlignment="Center"
+                             Height="36" />
+
+                    <!-- 刷新按钮 -->
+                    <Button Grid.Column="2" 
+                            Content="刷新" 
+                            Background="#F5F5F5"
+                            CornerRadius="6"
+                            Padding="16,8"
+                            Command="{Binding RefreshCommand}" />
+                </Grid>
+            </Border>
+
+            <!-- 小组卡片网格 -->
+            <ScrollViewer Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding Groups}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White" 
+                                    CornerRadius="8" 
+                                    Margin="8"
+                                    Width="280" 
+                                    Height="200"
+                                    BoxShadow="0 2 8 0 #1A000000"
+                                    Cursor="Hand">
+                                
+                                <Border.Styles>
+                                    <Style Selector="Border:pointerover">
+                                        <Setter Property="BoxShadow" Value="0 4 16 0 #33000000" />
+                                    </Style>
+                                </Border.Styles>
+
+                                <Grid Margin="16">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- 小组名称 -->
+                                    <TextBlock Grid.Row="0" 
+                                               Text="{Binding Name}" 
+                                               FontSize="16" 
+                                               FontWeight="Bold" 
+                                               Foreground="#333333" />
+
+                                    <!-- 成员数量 -->
+                                    <TextBlock Grid.Row="1" 
+                                               Text="{Binding StudentIds.Count, StringFormat='成员数量: {0}人'}" 
+                                               FontSize="12" 
+                                               Foreground="#666666" 
+                                               Margin="0,4,0,0" />
+
+                                    <!-- 描述 -->
+                                    <TextBlock Grid.Row="2" 
+                                               Text="{Binding Description}" 
+                                               FontSize="12" 
+                                               Foreground="#666666" 
+                                               TextWrapping="Wrap"
+                                               Margin="0,8,0,0" />
+
+                                    <!-- 创建时间 -->
+                                    <TextBlock Grid.Row="3" 
+                                               Text="{Binding CreatedTime, StringFormat='创建时间: {0:yyyy-MM-dd}'}" 
+                                               FontSize="10" 
+                                               Foreground="#999999" 
+                                               Margin="0,8,0,0" />
+
+                                    <!-- 操作按钮 -->
+                                    <StackPanel Grid.Row="4" 
+                                                Orientation="Horizontal" 
+                                                Spacing="8" 
+                                                Margin="0,12,0,0">
+                                        <Button Content="编辑" 
+                                                Background="#4CAF50" 
+                                                Foreground="White"
+                                                CornerRadius="4"
+                                                Padding="12,4"
+                                                FontSize="12"
+                                                Click="EditGroup_Click"
+                                                Tag="{Binding}" />
+                                        <Button Content="删除" 
+                                                Background="#F44336" 
+                                                Foreground="White"
+                                                CornerRadius="4"
+                                                Padding="12,4"
+                                                FontSize="12"
+                                                Click="DeleteGroup_Click"
+                                                Tag="{Binding}" />
+                                    </StackPanel>
+                                </Grid>
+
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- 分隔线 -->
+            <Rectangle Grid.Row="2" Height="1" Fill="#E0E0E0" Margin="0,16" />
+
+            <!-- 小组成员列表 -->
+            <Border Grid.Row="3" Background="White" CornerRadius="8" 
+                    BoxShadow="0 2 8 0 #1A000000" Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" 
+                               Text="{Binding SelectedGroup.Name, StringFormat='小组成员 - {0}'}" 
+                               FontSize="14" 
+                               FontWeight="Bold" 
+                               Margin="0,0,0,12" />
+
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding GroupMembers}"
+                              AutoGenerateColumns="False"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              CanUserReorderColumns="False"
+                              CanUserResizeColumns="True"
+                              IsReadOnly="True"
+                              SelectionMode="Single">
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="学号" Binding="{Binding Id}" Width="100" />
+                            <DataGridTextColumn Header="姓名" Binding="{Binding Name}" Width="150" />
+                            <DataGridCheckBoxColumn Header="激活" Binding="{Binding IsActive}" Width="80" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 编辑面板 -->
+        <Border Grid.Column="1" 
+                Width="320" 
+                Background="White" 
+                BorderBrush="#E0E0E0" 
+                BorderThickness="1,0,0,0"
+                IsVisible="{Binding IsEditPanelVisible}">
+            
+            <ScrollViewer>
+                <StackPanel Margin="24" Spacing="16">
+                    <!-- 标题 -->
+                    <TextBlock Text="{Binding EditPanelTitle}" 
+                               FontSize="18" 
+                               FontWeight="Bold" 
+                               Foreground="#333333" />
+
+                    <!-- 小组ID -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="小组ID" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding EditingGroup.Id}" 
+                                 IsReadOnly="{Binding !IsAddMode}" />
+                    </StackPanel>
+
+                    <!-- 小组名称 -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="小组名称" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding EditingGroup.Name}" 
+                                 Watermark="请输入小组名称" />
+                    </StackPanel>
+
+                    <!-- 描述 -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="描述" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding EditingGroup.Description}" 
+                                 Watermark="请输入小组描述"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 Height="80" />
+                    </StackPanel>
+
+                    <!-- 激活状态 -->
+                    <CheckBox Content="激活状态" 
+                              IsChecked="{Binding EditingGroup.IsActive}" 
+                              FontWeight="SemiBold" />
+
+                    <!-- 按钮组 -->
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,24,0,0">
+                        <Button Content="保存" 
+                                Background="#2196F3" 
+                                Foreground="White"
+                                CornerRadius="6"
+                                Padding="20,8"
+                                Command="{Binding SaveCommand}" />
+                        <Button Content="取消" 
+                                Background="#F5F5F5"
+                                CornerRadius="6"
+                                Padding="20,8"
+                                Command="{Binding CancelCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

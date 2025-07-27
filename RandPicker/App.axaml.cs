@@ -16,6 +16,7 @@ public partial class App : Application
 {
     public static ICommand ExitCommand { get; } = new RelayCommand(Exit);
     public static ICommand SettingsCommand { get; } = new RelayCommand(Settings);
+    public static ICommand ManagementCommand { get; } = new RelayCommand(OpenManagement);
 
     public override void Initialize()
     {
@@ -63,5 +64,11 @@ public partial class App : Application
     {
         Settings settings = new Settings();
         settings.Show();
+    }
+
+    private static void OpenManagement()
+    {
+        ManagementMainView managementWindow = new ManagementMainView();
+        managementWindow.Show();
     }
 }
